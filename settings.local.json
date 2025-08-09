@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(npm search:*)",
+      "Search(*)",
+      "Search(pattern:*)",
+      "Search(pattern:*, include:*)",
+      "Read(*)"
+    ],
+    "deny": []
+  }
+}
