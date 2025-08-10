@@ -27,3 +27,16 @@ When writing agent prompts and CLAUDE.md files, enumerate each concept in its ow
 * Put any specific instructions in a flat bulleted list
 * Include minimal before and after or bad vs good examples for about half of the concepts. Whichever ones are most difficult to describe with words alone.
 * AVOID: Emojis
+
+## Meaningful Guidelines
+When proposing guidelines or principles, ensure the opposite approach represents a legitimate alternative, not something obviously wrong.
+
+* A good guideline addresses a real choice where reasonable people might disagree
+* The opposite of your guideline should be a valid approach that some developers actually use
+* Avoid guidelines where the alternative is clearly incorrect or nonsensical
+
+Good example:
+"Prefer composition over inheritance" - The opposite (prefer inheritance) is a legitimate design choice some developers make.
+
+Bad example:
+"Write readable code" - The opposite (write unreadable code) is stupid on its face. No one intentionally writes unreadable code.
