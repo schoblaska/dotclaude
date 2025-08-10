@@ -10,115 +10,125 @@ Encapsulate behavior and data together in domain models rather than separating l
 
 Good example:
 ```ruby
-class Article < ApplicationRecord
-  def publish!
-    self.published_at = Time.current
-    self.status = 'published'
-    notify_subscribers
+class Item < ActiveRecord::Base
+  def activate!
+    self.active = true
+    self.activated_at = Time.current
+    notify_watchers
     save!
   end
+end
 
-  def unpublish!
-    self.published_at = nil
-    self.status = 'draft'
-    save!
+# Usage
+item.activate!
+```
+
+Bad example:
+```ruby
+class ItemActivationService
+  def activate(item)
+    item.active = true
+    item.activated_at = Time.current
+    NotificationService.new(item).notify
+    item.save!
+  end
+end
+
+# Usage
+ItemActivationService.new.activate(item)
+```
+
+## Immutable Chain Building
+Build chainable interfaces that return new instances rather than mutating self, allowing chains to be forked and reused.
+
+* Return new instances from chain methods, not mutated self
+* Use `with` pattern to create modified copies with new parameters
+* Allow branching chains from any point without affecting the original
+* Preserve immutability to enable safe concurrent use
+
+Good example:
+```ruby
+class Search
+  def where(conditions)
+    with(conditions: @conditions.merge(conditions))
+  end
+
+  def limit(n)
+    with(limit: n)
+  end
+
+  def with(**params)
+    self.class.new(@opts.merge(params))
+  end
+end
+
+# Usage - can fork chains
+base = Search.new.where(active: true)
+admins = base.where(role: 'admin')
+users = base.where(role: 'user')
+```
+
+Bad example:
+```ruby
+class Search
+  def where(conditions)
+    @conditions.merge!(conditions)
+    self
+  end
+
+  def limit(n)
+    @limit = n
+    self
+  end
+end
+
+# Usage - mutations prevent forking
+base = Search.new.where(active: true)
+admins = base.where(role: 'admin') # base is now modified!
+```
+
+## Clear Mutation Signals
+Make mutation explicit with bang methods (!) or use functional transformations that return new values without side effects.
+
+* Use `!` suffix for methods that mutate the receiver or have significant side effects
+* Prefer returning transformed values over mutating instance variables
+* Build complex transformations through method composition, not stateful accumulation
+* Make it obvious whether a method changes state or returns a new value
+
+Good example:
+```ruby
+class Processor
+  def process(data)
+    transform(data)
+      .then { |d| filter(d) }
+      .then { |d| format(d) }
   end
 
   private
 
-  def notify_subscribers
-    # notification logic here
+  def filter(data)
+    data.merge("items" => data["items"].select(&:valid?))
   end
 end
 
 # Usage
-article.publish!
+result = Processor.new.process(data)
 ```
 
 Bad example:
 ```ruby
-class ArticlePublishingService
-  def initialize(article)
-    @article = article
+class Processor
+  def process(data)
+    @data = data.dup
+    filter_items
+    format_output
+    @data
   end
 
-  def publish
-    @article.published_at = Time.current
-    @article.status = 'published'
-    NotificationService.new(@article).send_notifications
-    @article.save!
-  end
-end
+  private
 
-# Usage
-ArticlePublishingService.new(article).publish
-```
-
-## Chainable Fluent Interfaces
-Design classes and methods to support expressive chaining, returning self or meaningful objects that allow continued operations.
-
-* Return self from mutating methods to enable chaining
-* Design APIs that read naturally when chained together
-* Use Ruby's enumerable chains for data transformation
-* Create query objects that can be progressively refined
-
-Good example:
-```ruby
-class QueryBuilder
-  def where(conditions)
-    @conditions = (@conditions || {}).merge(conditions)
-    self
-  end
-
-  def order(field)
-    @order = field
-    self
-  end
-
-  def limit(count)
-    @limit = count
-    self
+  def filter_items
+    @data["items"] = @data["items"].select(&:valid?)
   end
 end
-
-# Usage
-users = User.active
-  .where(role: 'admin')
-  .order(:created_at)
-  .limit(10)
-
-# Enumerable chains
-result = orders
-  .select(&:paid?)
-  .sum(&:total)
-```
-
-Bad example:
-```ruby
-class QueryBuilder
-  def add_where_condition(conditions)
-    @conditions = (@conditions || {}).merge(conditions)
-    nil
-  end
-
-  def set_order(field)
-    @order = field
-    return
-  end
-end
-
-# Usage
-query = QueryBuilder.new
-query.add_where_condition(role: 'admin')
-query.set_order(:created_at)
-query.set_limit(10)
-users = query.execute
-
-# Procedural transformation
-paid_orders = []
-orders.each { |o| paid_orders << o if o.paid? }
-totals = []
-paid_orders.each { |o| totals << o.total }
-result = 0
-totals.each { |t| result += t }
 ```

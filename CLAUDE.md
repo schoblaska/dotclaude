@@ -27,6 +27,7 @@ When writing agent prompts and CLAUDE.md files, enumerate each concept in its ow
 * Put any specific instructions in a flat bulleted list
 * Include minimal before and after or bad vs good examples for about half of the concepts. Whichever ones are most difficult to describe with words alone.
 * AVOID: Emojis
+* Keep examples minimal and generic to preserve tokens - use simple names like User, Item, Data instead of domain-specific terms.
 
 ## Meaningful Guidelines
 When proposing guidelines or principles, ensure the opposite approach represents a legitimate alternative, not something obviously wrong.
