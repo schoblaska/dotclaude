@@ -76,58 +76,82 @@ end
 * Break complex operations into focused, reusable utility objects
 * Create single-purpose classes that encapsulate specific responsibilities
 * Coordinate objects to achieve sophisticated behavior
-* Even procedural-seeming tasks can benefit from object-oriented decomposition
+* Transform procedural state mutation into composable transformations
 
 ```ruby
-# Good - utility objects coordinate to handle CSV export
-class CsvExporter
-  def initialize(data, formatter: CsvFormatter.new)
-    @data = data
-    @formatter = formatter
+# Good - each object has one clear job
+class PriceCalculator
+  def initialize(order)
+    @order = order
   end
 
-  def export
-    @formatter.format(@data)
+  def total
+    base = BasePrice.new(@order.items).calculate
+    discount = Discount.new(@order.coupon, base).calculate
+    shipping = Shipping.new(@order.items, @order.address).calculate
+    
+    base - discount + shipping
   end
 end
 
-class CsvFormatter
-  def format(records)
-    CSV.generate do |csv|
-      csv << headers_for(records.first)
-      records.each { |record| csv << values_for(record) }
+class Discount
+  def initialize(coupon, amount)
+    @coupon = coupon
+    @amount = amount
+  end
+
+  def calculate
+    return 0 unless @coupon
+    
+    case @coupon.type
+    when :percentage then @amount * @coupon.value / 100.0
+    when :fixed then [@coupon.value, @amount].min
+    else 0
     end
+  end
+end
+
+# Bad - procedural class with tangled state
+class OrderProcessor
+  def initialize(order)
+    @order = order
+    @subtotal = 0
+    @discount = 0
+  end
+
+  def calculate_total
+    calculate_subtotal
+    apply_discount
+    calculate_shipping
+    @subtotal  # mutated through the chain
   end
 
   private
 
-  def headers_for(record)
-    record.attributes.keys.map(&:humanize)
+  def calculate_subtotal
+    @subtotal = @order.items.sum { |i| i.quantity * i.unit_price }
   end
 
-  def values_for(record)
-    record.attributes.values
-  end
-end
-
-# Usage - clean, testable, extensible
-exporter = CsvExporter.new(users)
-csv_content = exporter.export
-
-# Bad - procedural service class
-class ExportService
-  def self.export_users_to_csv(users)
-    CSV.generate do |csv|
-      csv << users.first.attributes.keys.map(&:humanize)
-      users.each do |user|
-        csv << user.attributes.values
-      end
+  def apply_discount
+    return unless @order.coupon
+    
+    if @order.coupon.type == :percentage
+      @discount = @subtotal * @order.coupon.value / 100.0
+    elsif @order.coupon.type == :fixed
+      @discount = [@order.coupon.value, @subtotal].min
     end
+    
+    @subtotal -= @discount  # mutates running total
+  end
+
+  def calculate_shipping
+    weight = @order.items.sum(&:weight)
+    shipping = weight * @order.address.zone_rate
+    shipping += weight > 50 ? 15 : 5
+    
+    @subtotal += shipping  # mutates again
   end
 end
-
-# Usage - harder to test, extend, or reuse
-csv_content = ExportService.export_users_to_csv(users)
 ```
 
 ## Clear Mutation Signals
