@@ -1,35 +1,37 @@
 # Ruby Guidelines
 
-## Rich Domain Objects Over Service Objects
-* Put business logic in models that own the data
-* Use methods that read like natural language
-* Avoid service objects for model-specific operations
-* Models handle their own persistence and validation
+## Expressive Objects Over Procedural Code
+* Design objects with intuitive interfaces that minimize surprise
+* Favor behavioral messages over class checking (duck typing)
+* Balance expressiveness with clarity - code should read like intent
+* Keep interfaces small and focused on what objects do, not what they are
 
 ```ruby
-# Good - domain method
-class Item < ActiveRecord::Base
-  def activate!
-    self.active = true
-    self.activated_at = Time.current
-    notify_watchers
-    save!
+# Good - expressive interface
+class Temperature
+  def to_fahrenheit
+    @celsius * 9/5.0 + 32
+  end
+  
+  def freezing?
+    @celsius <= 0
   end
 end
 
-item.activate!
+temp.freezing? # reads like a question
 
-# Bad - procedural service
-class ItemActivationService
-  def activate(item)
-    item.active = true
-    item.activated_at = Time.current
-    NotificationService.new(item).notify
-    item.save!
+# Bad - procedural utilities
+class TemperatureUtils
+  def self.convert_c_to_f(celsius)
+    celsius * 9/5.0 + 32
+  end
+  
+  def self.is_freezing(celsius)
+    celsius <= 0
   end
 end
 
-ItemActivationService.new.activate(item)
+TemperatureUtils.is_freezing(temp_c) # procedural, not object-oriented
 ```
 
 ## Immutable Chain Building
