@@ -72,41 +72,6 @@ class Query
 end
 ```
 
-## Block-Based Configuration
-* Use blocks for optional configuration
-* Yield self or configuration object for DSL-style setup
-* Enable both inline and block-based usage
-
-```ruby
-# Good - flexible configuration
-class Client
-  attr_accessor :url, :timeout, :headers
-
-  def initialize(url = nil)
-    @url = url
-    yield self if block_given?
-  end
-end
-
-# Both styles work
-client = Client.new('https://api.example.com')
-
-client = Client.new do |c|
-  c.url = 'https://api.example.com'
-  c.timeout = 30
-  c.headers = { 'Authorization' => 'Bearer token' }
-end
-
-# Bad - rigid initialization
-class Client
-  def initialize(url, timeout, headers)
-    @url = url
-    @timeout = timeout
-    @headers = headers
-  end
-end
-```
-
 ## Clear Mutation Signals
 * Use `!` for methods that mutate or have side effects
 * Return transformed values instead of mutating state
