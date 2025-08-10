@@ -1,6 +1,11 @@
 # DOTCLAUDE
 This is the root-level system prompt for Claude Code agents running in this environment.
 
+## Additional Claude Config
+Prompts and resources you should utilize that are not part of the standard Claude configuration.
+
+* ~/.claude/languages/*.md - Coding guidelines for specific languages and frameworks (ruby.md, react.md, etc.)
+
 ## Iterative Collaboration
 When the user asks you to do something, work iteratively to ensure alignment before implementation.
 
