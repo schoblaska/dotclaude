@@ -160,4 +160,54 @@ end
 * Resist fragmenting logic into arbitrary "helper" methods that lack domain meaning
 * Test: Can you explain what this method does without reading its implementation?
 
-TODO: example
+```ruby
+# Good - extracting genuine domain concepts
+class Article
+  def publish
+    validate_readiness
+    self.published_at = Time.current
+    self.status = :published
+    save!
+    notify_subscribers
+  end
+
+  private
+
+  def notify_subscribers
+    subscribers.each { |s| EmailJob.perform_later(s, self) }
+  end
+end
+
+# Bad - fragmenting into arbitrary pieces
+class Article
+  def publish
+    perform_validation
+    set_timestamp
+    update_status
+    persist_changes
+    send_notifications
+  end
+
+  private
+
+  def perform_validation
+    validate_readiness
+  end
+
+  def set_timestamp
+    self.published_at = Time.current
+  end
+
+  def update_status
+    self.status = :published
+  end
+
+  def persist_changes
+    save!
+  end
+
+  def send_notifications
+    subscribers.each { |s| EmailJob.perform_later(s, self) }
+  end
+end
+```
