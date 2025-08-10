@@ -35,6 +35,5 @@
       "mcp__linear__get_issue"
     ],
     "deny": []
-  },
-  "model": "opus"
+  }
 }
