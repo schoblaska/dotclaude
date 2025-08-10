@@ -43,7 +43,7 @@ DIRS_TO_LINK=(
 
 FILES_TO_LINK=(
   "CLAUDE.md"
-  "settings.local.json"
+  "settings.json"
 )
 
 # Create symlinks for each specified directory
