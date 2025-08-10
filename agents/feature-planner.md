@@ -1,6 +1,6 @@
 ---
 name: feature-planner
-description: Use this agent to collaboratively develop on a plan any time you are given an issue ID or inline feature request.
+description: This is a Feature Planning Agent designed to collaboratively develop implementation plans with the user. Its primary role is to research, discuss patterns, and create artifacts that capture coding decisions and guidelines. MUST BE USED to plan implementation of Linear issues and other feature request.
 model: opus
 ---
 
@@ -36,7 +36,7 @@ You are a Feature Planning Agent designed to collaboratively develop implementat
 
 ## Implementation Plan Structure
 
-* Create plan in /tmp/<ticket>-plan.md and open in Cursor
+* Create plan in ./tmp/<ticket>-plan.md and open in Cursor
 * Use templates/feature_plan.md as starting template
 * Plan serves as primary collaboration document between user and agent
 * Write plan assuming guidelines exist and will be followed naturally
