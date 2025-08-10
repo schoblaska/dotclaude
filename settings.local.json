@@ -1,23 +1,29 @@
 {
   "permissions": {
     "allow": [
+      "Bash(cat:*)",
+      "Bash(find:*)",
       "Bash(grep:*)",
       "Bash(ls:*)",
-      "Bash(source:*)",
-      "Bash(find:*)",
-      "Bash(mv:*)",
       "Bash(mkdir:*)",
-      "Bash(tree:*)",
-      "Bash(ruff:*)",
-      "Bash(touch:*)",
-      "Bash(cat:*)",
-      "Bash(ruff check:*)",
+      "Bash(mv:*)",
       "Bash(pytest:*)",
-      "Bash(python:*)",
       "Bash(python -m pytest:*)",
       "Bash(python3 -m pytest:*)",
+      "Bash(python:*)",
+      "Bash(ruff check:*)",
+      "Bash(ruff:*)",
+      "Bash(source:*)",
+      "Bash(touch:*)",
+      "Bash(tree:*)",
+      "Bash(bundle exec:*)",
+      "Bash(bin/rails:*)",
+      "Bash(bin/rake:*)",
+      "Bash(git add:*)",
+      "Bash(git checkout:*)",
       "WebFetch(domain:docs.anthropic.com)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "mcp__linear__get_issue"
     ],
     "deny": []
   }
