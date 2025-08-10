@@ -89,7 +89,7 @@ class PriceCalculator
     base = BasePrice.new(@order.items).calculate
     discount = Discount.new(@order.coupon, base).calculate
     shipping = Shipping.new(@order.items, @order.address).calculate
-    
+
     base - discount + shipping
   end
 end
@@ -102,7 +102,7 @@ class Discount
 
   def calculate
     return 0 unless @coupon
-    
+
     case @coupon.type
     when :percentage then @amount * @coupon.value / 100.0
     when :fixed then [@coupon.value, @amount].min
@@ -134,13 +134,13 @@ class OrderProcessor
 
   def apply_discount
     return unless @order.coupon
-    
+
     if @order.coupon.type == :percentage
       @discount = @subtotal * @order.coupon.value / 100.0
     elsif @order.coupon.type == :fixed
       @discount = [@order.coupon.value, @subtotal].min
     end
-    
+
     @subtotal -= @discount  # mutates running total
   end
 
@@ -148,35 +148,16 @@ class OrderProcessor
     weight = @order.items.sum(&:weight)
     shipping = weight * @order.address.zone_rate
     shipping += weight > 50 ? 15 : 5
-    
+
     @subtotal += shipping  # mutates again
   end
 end
 ```
 
-## Clear Mutation Signals
-* Use `!` for methods that mutate or have side effects
-* Return transformed values instead of mutating state
-* Compose transformations functionally
+## Domain Concepts Over Arbitrary Fragments
+* Extract methods only when they represent genuine domain concepts or reusable logic
+* Keep related steps together when they form a coherent process
+* Resist fragmenting logic into arbitrary "helper" methods that lack domain meaning
+* Test: Can you explain what this method does without reading its implementation?
 
-```ruby
-# Good - clear mutation signal
-def normalize!
-  @name = @name.strip.downcase
-  @email = @email.strip.downcase
-  self
-end
-
-def normalized
-  self.class.new(
-    name: @name.strip.downcase,
-    email: @email.strip.downcase
-  )
-end
-
-# Bad - hidden mutation
-def normalize
-  @name = @name.strip.downcase
-  @email = @email.strip.downcase
-end
-```
+TODO: example
