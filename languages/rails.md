@@ -226,13 +226,13 @@ end
 ```ruby
 # Good - Rails validations with custom validators
 class Account < ApplicationRecord
+  RESERVED_SUBDOMAINS = %w[www app api admin]
+
   validates :email, presence: true, uniqueness: true
   validates :subdomain, presence: true, format: /\A[a-z0-9-]+\z/
   validate :subdomain_not_reserved
 
   private
-
-  RESERVED_SUBDOMAINS = %w[www app api admin]
 
   def subdomain_not_reserved
     return unless RESERVED_SUBDOMAINS.include?(subdomain)
