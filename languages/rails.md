@@ -145,25 +145,25 @@ class PricingCalculator
     @order = order
     @rules = load_pricing_rules
   end
-  
+
   def subtotal
     @order.line_items.sum(&:total)
   end
-  
+
   def discount
     @rules.map { |rule| rule.apply(@order) }.sum
   end
-  
+
   def tax
     TaxCalculator.new(@order.shipping_address).calculate(taxable_amount)
   end
-  
+
   def total
     subtotal - discount + tax + shipping
   end
-  
+
   private
-  
+
   def taxable_amount
     subtotal - discount
   end
@@ -192,17 +192,17 @@ class PricingService
     order.line_items.each do |item|
       subtotal += item.quantity * item.price
     end
-    
+
     discount = 0
     if order.coupon_code
       discount = CouponService.calculate_discount(order.coupon_code, subtotal)
     end
-    
+
     tax = TaxService.calculate_tax(subtotal - discount, order.shipping_address)
     shipping = ShippingService.calculate_shipping(order)
-    
+
     total = subtotal - discount + tax + shipping
-    
+
     order.update!(
       subtotal: subtotal,
       discount: discount,
@@ -297,6 +297,66 @@ class Order < ApplicationRecord
     where(status: 'pending')
   end
 end
+```
+
+## Logic Lives Where It Belongs
+* Views handle presentation logic (formatting, conditional display, UI state)
+* Controllers orchestrate requests (authentication, authorization, parameter handling)
+* Models enforce business rules (validations, state transitions, domain logic)
+* Each layer should only know about its own concerns
+
+```ruby
+# Good - each layer handles its own logic
+# View: Presentation decisions
+# <% if user_signed_in? && @article.editable_by?(current_user) %>
+#   <%= link_to "Edit", edit_article_path(@article),
+#               class: @article.published? ? "btn-warning" : "btn-primary" %>
+# <% end %>
+
+# Controller: Request orchestration
+def update
+  @article = Article.find(params[:id])
+  authorize @article  # authorization logic
+
+  if @article.update(article_params)
+    redirect_to @article
+  else
+    render :edit
+  end
+end
+
+# Model: Business rules
+class Article < ApplicationRecord
+  def editable_by?(user)
+    user == author || user.admin?
+  end
+
+  def publish!
+    return false unless valid? && draft?
+    update!(published_at: Time.current, status: :published)
+  end
+end
+
+# Bad - controller coupled to view needs
+class ArticlesController < ApplicationController
+  def show
+    @article = Article.find(params[:id])
+    @can_edit = user_signed_in? && (@article.author == current_user || current_user.admin?)
+    @edit_button_class = @article.published? ? "btn-warning" : "btn-primary"
+    @show_edit_button = @can_edit  # Controller shouldn't know about UI
+  end
+end
+
+# Bad - helper doing what view should do
+module ArticlesHelper
+  def edit_button_for(article)
+    return unless user_signed_in? && article.editable_by?(current_user)
+
+    link_to "Edit", edit_article_path(article),
+            class: article.published? ? "btn-warning" : "btn-primary"
+  end
+end
+# Now view can't see its own logic: <%= edit_button_for(@article) %>
 ```
 
 ## Models Enforce Their Own Consistency
