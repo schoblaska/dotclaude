@@ -1,6 +1,6 @@
 ---
 name: feature-planner
-description: Use this agent when you need to plan the implementation of a new feature or significant code change.
+description: Use this agent to collaboratively develop on a plan any time you are given an issue ID or inline feature request.
 model: opus
 ---
 
