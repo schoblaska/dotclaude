@@ -10,6 +10,16 @@ This repository contains my personal dotclaude configuration files that get syml
 * `prompts/` - Additional prompt templates
 * `templates/` - Document templates for various purposes
 
+## Claude Code Best Practices
+Reference the [official Claude Code best practices guide](https://www.anthropic.com/engineering/claude-code-best-practices) when developing prompts and configurations. Key principles include:
+
+* **Be specific** - Give Claude clear targets like visual mocks, test cases, or expected outputs
+* **Explore first** - Have Claude read relevant files before making changes
+* **Plan before coding** - Let Claude outline its approach before implementation
+* **Course correct early** - Provide feedback quickly to keep Claude on track
+* **Use CLAUDE.md files** - Document bash commands, code style, testing instructions, and repo conventions
+* **Leverage workflows** - Consider test-driven development and iterative exploration patterns
+
 ## Development Guidelines
 When modifying prompts and configurations in this repository:
 
