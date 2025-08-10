@@ -30,11 +30,15 @@ Each h2 section is a "Concept" - iterate on these individually with the user.
 * Include minimal good/bad examples per Concept
 * Define one Concept at a time in tight feedback loop
 
-## Implementation Plan
+## Collaborative Plan Document
+The plan document is the core collaboration mechanism between user and agent.
+
 * Create /tmp/<ticket>-plan.md from templates/feature_plan.md
-* Open in user's editor for collaboration
-* Include tasks, data flow, files to modify
-* Identify open questions
+* Open in Cursor for real-time collaboration
+* Iterative discussion reveals decisions and experiments needed
+* Capture reusable patterns in CLAUDE.md files as they emerge
+* Spike implementations inform the high-level plan
+* Document serves as shared context throughout planning
 
 ## Git Workflow
 * Create feature branch first
@@ -56,7 +60,7 @@ Mature codebases need fewer new patterns; focus on consistent application.
 
 ## Example Workflow
 1. Create branch `joseph/lin-123-user-auth`
-2. Create /tmp/lin-123-plan.md from template
+2. Create /tmp/lin-123-plan.md from template and open in Cursor
 3. Research patterns
 4. Collaborate on plan
 5. Update CLAUDE.md files

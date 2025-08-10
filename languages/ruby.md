@@ -6,8 +6,31 @@
 * Avoid service objects for model-specific operations
 * Models handle their own persistence and validation
 
-Good: `item.activate!` (domain method)
-Bad: `ItemActivationService.new.activate(item)` (procedural service)
+```ruby
+# Good - domain method
+class Item < ActiveRecord::Base
+  def activate!
+    self.active = true
+    self.activated_at = Time.current
+    notify_watchers
+    save!
+  end
+end
+
+item.activate!
+
+# Bad - procedural service
+class ItemActivationService
+  def activate(item)
+    item.active = true
+    item.activated_at = Time.current
+    NotificationService.new(item).notify
+    item.save!
+  end
+end
+
+ItemActivationService.new.activate(item)
+```
 
 ## Immutable Chain Building
 * Return new instances from chain methods, not self

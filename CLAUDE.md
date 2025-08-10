@@ -33,9 +33,3 @@ When modifying prompts and configurations in this repository:
 ## Setup Commands
 * Run `./setup.sh` to symlink config files to ~/.claude/
 * Verify symlinks: `ls -la ~/.claude/`
-
-## Testing
-No automated tests - manually verify:
-* Symlinks created correctly after setup
-* Claude Code recognizes custom agents and prompts
-* Language guidelines apply in appropriate projects
