@@ -17,9 +17,20 @@ Manually add this block to the top-level of `~/.claude.json`:
 
 ```json
 "mcpServers": {
-  "linear-server": {
+  "linear": {
     "type": "sse",
     "url": "https://mcp.linear.app/sse"
+  },
+
+  "brave-search": {
+    "command": "npx",
+    "args": [
+      "-y",
+      "@modelcontextprotocol/server-brave-search"
+    ],
+    "env": {
+      "BRAVE_API_KEY": "YOUR_API_KEY_HERE"
+    }
   }
 }
 ```
