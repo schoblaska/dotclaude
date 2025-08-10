@@ -13,16 +13,19 @@ This repository contains my personal dotclaude configuration files that get syml
 ## Claude Code Best Practices
 Reference the [official Claude Code best practices guide](https://www.anthropic.com/engineering/claude-code-best-practices) when developing prompts and configurations. Key principles include:
 
-* **Be specific** - Give Claude clear targets like visual mocks, test cases, or expected outputs
-* **Explore first** - Have Claude read relevant files before making changes
-* **Plan before coding** - Let Claude outline its approach before implementation
-* **Course correct early** - Provide feedback quickly to keep Claude on track
-* **Use CLAUDE.md files** - Document bash commands, code style, testing instructions, and repo conventions
-* **Leverage workflows** - Consider test-driven development and iterative exploration patterns
+* Give Claude clear targets like visual mocks, test cases, or expected outputs
+* Have Claude read relevant files before making changes
+* Let Claude outline its approach before implementation
+* Provide feedback quickly to keep Claude on track
+* Document bash commands, code style, testing instructions, and repo conventions in CLAUDE.md files
+* Consider test-driven development and iterative exploration patterns
 
 ## Development Guidelines
 When modifying prompts and configurations in this repository:
 
+* Proactively tighten wording and remove redundant instructions to maximize available context
+* Remove instructions that don't add value or merely state the obvious
+* Every word should serve a purpose; if it doesn't change behavior, cut it
 * Follow the prompt format guidelines defined in the global CLAUDE.md
 * Ensure examples are minimal and generic
 * Avoid unnecessary complexity in agent prompts
