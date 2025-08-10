@@ -42,8 +42,8 @@ DIRS_TO_LINK=(
 )
 
 FILES_TO_LINK=(
-  "CLAUDE.md"
-  "settings.json"
+  "global/CLAUDE.md:CLAUDE.md"  # source:target format
+  "global/settings.json:settings.json"
 )
 
 # Create symlinks for each specified directory
@@ -59,9 +59,15 @@ for dir in "${DIRS_TO_LINK[@]}"; do
 done
 
 # Create symlinks for each specified file
-for file in "${FILES_TO_LINK[@]}"; do
-  source="$REPO_DIR/$file"
-  target="$CLAUDE_DIR/$file"
+for file_spec in "${FILES_TO_LINK[@]}"; do
+  # Check if the spec contains a colon for custom source:target mapping
+  if [[ "$file_spec" == *":"* ]]; then
+    source="$REPO_DIR/${file_spec%%:*}"
+    target="$CLAUDE_DIR/${file_spec##*:}"
+  else
+    source="$REPO_DIR/$file_spec"
+    target="$CLAUDE_DIR/$file_spec"
+  fi
 
   if [ -f "$source" ]; then
     create_symlink "$source" "$target"
