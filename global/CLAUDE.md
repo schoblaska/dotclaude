@@ -25,6 +25,16 @@ Each h2 section defines a distinct "Concept" - a referenceable unit of guidance.
 * Include minimal examples only where words alone are insufficient
 * Use generic names (User, Item, Data) not domain-specific terms
 
+## PR Review Response
+When responding to PR feedback or review requests:
+
+* Read ALL review comments - top-level reviews and individual line comments
+* Create a TODO list item for EACH review and comment thread
+* Include redundant/overlapping items - enumerate everything explicitly
+* Process items one-by-one in logical order
+* For each item: discuss feedback, agree on correction, commit, then continue
+* Never batch multiple feedback items into single commits
+
 ## Meaningful Guidelines
 Guidelines must address real choices where developers might legitimately disagree.
 
