@@ -1,4 +1,4 @@
-## Shift + Enter
+## Shift + Enter in Cursor
 Add this Cursor keybind, which remaps shift + enter to alt + enter.
 
 ```json
@@ -21,6 +21,24 @@ Manually add this block to the top-level of `~/.claude.json`:
     "type": "sse",
     "url": "https://mcp.linear.app/sse"
   }
+}
+```
+
+## Project Permissions
+Put in `.claude/settings.local.json` inside the project.
+
+```json
+{
+  "allowedTools": [
+    "Edit",
+    "Read",
+    "Write",
+    "Bash(git add:*)",
+    "Bash(git commit:*)",
+    "Bash(npm:*)",
+    "Bash(python:*)",
+    "Bash(pytest:*)"
+  ]
 }
 ```
 
