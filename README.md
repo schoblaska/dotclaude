@@ -32,6 +32,22 @@ Manually add this block to the top-level of `~/.claude.json`:
       "BRAVE_API_KEY": "YOUR_API_KEY_HERE"
     }
   }
+
+  "github": {
+    "type": "stdio",
+    "command": "docker",
+    "args": [
+      "run",
+      "-i",
+      "--rm",
+      "-e",
+      "GITHUB_PERSONAL_ACCESS_TOKEN",
+      "ghcr.io/github/github-mcp-server"
+    ],
+    "env": {
+      "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_PAT_HERE"
+    }
+  }
 }
 ```
 
