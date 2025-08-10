@@ -72,6 +72,64 @@ class Query
 end
 ```
 
+## Utility Objects For Complex Logic
+* Break complex operations into focused, reusable utility objects
+* Create single-purpose classes that encapsulate specific responsibilities
+* Coordinate objects to achieve sophisticated behavior
+* Even procedural-seeming tasks can benefit from object-oriented decomposition
+
+```ruby
+# Good - utility objects coordinate to handle CSV export
+class CsvExporter
+  def initialize(data, formatter: CsvFormatter.new)
+    @data = data
+    @formatter = formatter
+  end
+
+  def export
+    @formatter.format(@data)
+  end
+end
+
+class CsvFormatter
+  def format(records)
+    CSV.generate do |csv|
+      csv << headers_for(records.first)
+      records.each { |record| csv << values_for(record) }
+    end
+  end
+
+  private
+
+  def headers_for(record)
+    record.attributes.keys.map(&:humanize)
+  end
+
+  def values_for(record)
+    record.attributes.values
+  end
+end
+
+# Usage - clean, testable, extensible
+exporter = CsvExporter.new(users)
+csv_content = exporter.export
+
+# Bad - procedural service class
+class ExportService
+  def self.export_users_to_csv(users)
+    CSV.generate do |csv|
+      csv << users.first.attributes.keys.map(&:humanize)
+      users.each do |user|
+        csv << user.attributes.values
+      end
+    end
+  end
+end
+
+# Usage - harder to test, extend, or reuse
+csv_content = ExportService.export_users_to_csv(users)
+```
+
 ## Clear Mutation Signals
 * Use `!` for methods that mutate or have side effects
 * Return transformed values instead of mutating state
