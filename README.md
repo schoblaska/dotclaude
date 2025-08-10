@@ -70,4 +70,5 @@ Put in `.claude/settings.local.json` inside the project.
 ```
 
 ## Links
+* https://www.anthropic.com/engineering/claude-code-best-practices
 * https://github.com/coleam00/context-engineering-intro

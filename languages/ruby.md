@@ -1,54 +1,47 @@
 # Ruby Guidelines
 
-## Rich Domain Objects Over Service Objects
-Encapsulate behavior and data together in domain models rather than separating logic into procedural service classes.
+## Expressive Objects Over Procedural Code
+* Design objects with intuitive interfaces that minimize surprise
+* Favor behavioral messages over class checking (duck typing)
+* Balance expressiveness with clarity - code should read like intent
+* Keep interfaces small and focused on what objects do, not what they are
 
-* Put business logic directly in the models that own the data
-* Use model methods that read like natural language about the domain
-* Avoid creating service objects for operations that belong to a specific model
-* Let models know how to save themselves, validate themselves, and perform their business operations
-
-Good example:
 ```ruby
-class Item < ActiveRecord::Base
-  def activate!
-    self.active = true
-    self.activated_at = Time.current
-    notify_watchers
-    save!
+# Good - expressive interface
+class Temperature
+  def to_fahrenheit
+    @celsius * 9/5.0 + 32
+  end
+
+  def freezing?
+    @celsius <= 0
   end
 end
 
-# Usage
-item.activate!
-```
+temp.freezing? # reads like a question
 
-Bad example:
-```ruby
-class ItemActivationService
-  def activate(item)
-    item.active = true
-    item.activated_at = Time.current
-    NotificationService.new(item).notify
-    item.save!
+# Bad - procedural utilities
+class TemperatureUtils
+  def self.convert_c_to_f(celsius)
+    celsius * 9/5.0 + 32
+  end
+
+  def self.is_freezing(celsius)
+    celsius <= 0
   end
 end
 
-# Usage
-ItemActivationService.new.activate(item)
+TemperatureUtils.is_freezing(temp_c) # procedural, not object-oriented
 ```
 
 ## Immutable Chain Building
-Build chainable interfaces that return new instances rather than mutating self, allowing chains to be forked and reused.
+* Return new instances from chain methods, not self
+* Use `with` pattern for modified copies
+* Enable chain forking without affecting originals
 
-* Return new instances from chain methods, not mutated self
-* Use `with` pattern to create modified copies with new parameters
-* Allow branching chains from any point without affecting the original
-* Preserve immutability to enable safe concurrent use
-
-Good example:
 ```ruby
-class Search
+# Good - returns new instance
+class Query
   def where(conditions)
     with(conditions: @conditions.merge(conditions))
   end
@@ -57,78 +50,86 @@ class Search
     with(limit: n)
   end
 
-  def with(**params)
-    self.class.new(@opts.merge(params))
+  private
+
+  def with(attrs)
+    self.class.new(@base_attrs.merge(attrs))
   end
 end
 
-# Usage - can fork chains
-base = Search.new.where(active: true)
-admins = base.where(role: 'admin')
-users = base.where(role: 'user')
-```
+base = Query.new(table: 'users')
+active = base.where(active: true)
+recent = active.where(created: '2024-01-01..')
+limited = recent.limit(10)
+# base remains unchanged
 
-Bad example:
-```ruby
-class Search
+# Bad - mutates self
+class Query
   def where(conditions)
     @conditions.merge!(conditions)
     self
   end
+end
+```
 
-  def limit(n)
-    @limit = n
-    self
+## Block-Based Configuration
+* Use blocks for optional configuration
+* Yield self or configuration object for DSL-style setup
+* Enable both inline and block-based usage
+
+```ruby
+# Good - flexible configuration
+class Client
+  attr_accessor :url, :timeout, :headers
+
+  def initialize(url = nil)
+    @url = url
+    yield self if block_given?
   end
 end
 
-# Usage - mutations prevent forking
-base = Search.new.where(active: true)
-admins = base.where(role: 'admin') # base is now modified!
+# Both styles work
+client = Client.new('https://api.example.com')
+
+client = Client.new do |c|
+  c.url = 'https://api.example.com'
+  c.timeout = 30
+  c.headers = { 'Authorization' => 'Bearer token' }
+end
+
+# Bad - rigid initialization
+class Client
+  def initialize(url, timeout, headers)
+    @url = url
+    @timeout = timeout
+    @headers = headers
+  end
+end
 ```
 
 ## Clear Mutation Signals
-Make mutation explicit with bang methods (!) or use functional transformations that return new values without side effects.
+* Use `!` for methods that mutate or have side effects
+* Return transformed values instead of mutating state
+* Compose transformations functionally
 
-* Use `!` suffix for methods that mutate the receiver or have significant side effects
-* Prefer returning transformed values over mutating instance variables
-* Build complex transformations through method composition, not stateful accumulation
-* Make it obvious whether a method changes state or returns a new value
-
-Good example:
 ```ruby
-class Processor
-  def process(data)
-    transform(data)
-      .then { |d| filter(d) }
-      .then { |d| format(d) }
-  end
-
-  private
-
-  def filter(data)
-    data.merge("items" => data["items"].select(&:valid?))
-  end
+# Good - clear mutation signal
+def normalize!
+  @name = @name.strip.downcase
+  @email = @email.strip.downcase
+  self
 end
 
-# Usage
-result = Processor.new.process(data)
-```
+def normalized
+  self.class.new(
+    name: @name.strip.downcase,
+    email: @email.strip.downcase
+  )
+end
 
-Bad example:
-```ruby
-class Processor
-  def process(data)
-    @data = data.dup
-    filter_items
-    format_output
-    @data
-  end
-
-  private
-
-  def filter_items
-    @data["items"] = @data["items"].select(&:valid?)
-  end
+# Bad - hidden mutation
+def normalize
+  @name = @name.strip.downcase
+  @email = @email.strip.downcase
 end
 ```

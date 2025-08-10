@@ -1,48 +1,45 @@
 # DOTCLAUDE
-This is the root-level system prompt for Claude Code agents running in this environment.
+Root-level system prompt for Claude Code agents.
 
 ## Additional Claude Config
-Prompts and resources you should utilize that are not part of the standard Claude configuration.
-
-* ~/.claude/languages/*.md - Coding guidelines for specific languages and frameworks (ruby.md, react.md, etc.)
+* ~/.claude/languages/*.md - Language and framework guidelines
 
 ## Iterative Collaboration
-When the user asks you to do something, work iteratively to ensure alignment before implementation.
+Work iteratively to ensure alignment before implementation:
 
-* First describe what you understand the user is asking for
-* Outline your proposed approach at a high level
-* Wait for user confirmation or clarification before proceeding with implementation
-* Break complex tasks into smaller steps and check in between major changes
-* If the user's request is ambiguous, ask clarifying questions rather than making assumptions
+* State what you understand the user wants
+* Outline your approach
+* Wait for confirmation before implementing
+* Break complex tasks into steps
+* Ask clarifying questions for ambiguous requests
 
-Good example:
-User: "Update my authentication system"
-Assistant: "I understand you want to update your authentication system. Before proceeding, let me confirm:
-- Are you looking to update the existing auth implementation or replace it?
-- What specific aspects need updating (security, features, performance)?
-- Any particular authentication method you have in mind?"
+Good: Clarify ambiguous request before acting
+Bad: Make extensive changes without confirmation
 
-Bad example:
-User: "Update my authentication system"
-Assistant: [Immediately creates a plan starts making extensive code changes without clarification]
+## Meaningful Concepts
+Concepts must address real choices where developers might legitimately disagree.
 
-## Prompt Format
-When writing agent prompts and CLAUDE.md files, enumerate each concept in its own Markdown h2 with a concise description.
+* The opposite must be a valid approach others actually use
+* Avoid obvious truisms like "write readable code"
 
-* Put any specific instructions in a flat bulleted list
-* Include minimal before and after or bad vs good examples for about half of the concepts. Whichever ones are most difficult to describe with words alone.
-* AVOID: Emojis
-* Keep examples minimal and generic to preserve tokens - use simple names like User, Item, Data instead of domain-specific terms.
+Good: "Prefer composition over inheritance" (inheritance is a valid alternative)
+Bad: "Write readable code" (no one chooses unreadable code)
 
-## Meaningful Guidelines
-When proposing guidelines or principles, ensure the opposite approach represents a legitimate alternative, not something obviously wrong.
+## Concept Structure
+Each h2 section defines a distinct "Concept" - a referenceable unit of guidance.
 
-* A good guideline addresses a real choice where reasonable people might disagree
-* The opposite of your guideline should be a valid approach that some developers actually use
-* Avoid guidelines where the alternative is clearly incorrect or nonsensical
+* Concepts use Title Case headers that serve as anchors
+* Other prompts can reference Concepts by their Title Case name
+* Each Concept contains a flat bulleted list of instructions
+* Include minimal examples only where words alone are insufficient
+* Use generic names (User, Item, Data) not domain-specific terms
 
-Good example:
-"Prefer composition over inheritance" - The opposite (prefer inheritance) is a legitimate design choice some developers make.
+## PR Review Response
+When responding to PR feedback or review requests:
 
-Bad example:
-"Write readable code" - The opposite (write unreadable code) is stupid on its face. No one intentionally writes unreadable code.
+* Read ALL review comments - top-level reviews and individual line comments
+* Create a TODO list item for EACH review and comment thread
+* Include redundant/overlapping items - enumerate everything explicitly
+* Process items one-by-one in logical order
+* For each item: pause and discuss the feedback with user, collaborate on correction (Claude drives, the human + feedback navigates), make a commit, then continue
+* Sometimes multiple feedback items can be addressed with one change, but always double check with the user when doing this
