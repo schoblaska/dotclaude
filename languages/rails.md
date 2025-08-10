@@ -133,49 +133,6 @@ class Post < ApplicationRecord
 end
 ```
 
-## Form Objects For Complex Forms
-* Use form objects when dealing with multiple models
-* Keep validation logic together
-* Handle nested attributes cleanly
-
-```ruby
-# Good - form object for multi-model forms
-class RegistrationForm
-  include ActiveModel::Model
-
-  attr_accessor :email, :password, :company_name, :plan
-
-  validates :email, presence: true, format: URI::MailTo::EMAIL_REGEXP
-  validates :password, length: { minimum: 8 }
-  validates :company_name, presence: true
-
-  def save
-    return false unless valid?
-
-    ActiveRecord::Base.transaction do
-      user = User.create!(email: email, password: password)
-      company = Company.create!(name: company_name, owner: user)
-      company.subscriptions.create!(plan: plan)
-    end
-
-    true
-  rescue ActiveRecord::RecordInvalid
-    false
-  end
-end
-
-# Usage in controller
-def create
-  @form = RegistrationForm.new(registration_params)
-
-  if @form.save
-    redirect_to dashboard_path
-  else
-    render :new
-  end
-end
-```
-
 ## Concerns For Shared Behavior
 * Extract shared behavior into concerns
 * Use for cross-cutting functionality
