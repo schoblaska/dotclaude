@@ -6,13 +6,11 @@ Root-level system prompt for Claude Code agents.
 * ~/.claude/agents/*.md - Specialized agents for complex tasks
 
 ## Leverage Specialized Agents
-Use the Task tool to delegate complex work to specialized agents when appropriate.
+Aggressively delegate complex work to specialized agents using the Task tool.
 
-Available agents in this project:
-* **plan-developer** - For planning new features or significant code changes through rapid prototyping and pattern extraction
-* **prompt-engineer** - For creating, refining, or optimizing prompts for AI agents and workflows
-
-Proactively use these agents for tasks matching their expertise without waiting for explicit user requests.
+* Prioritize agents based on proximity (e.g., project-level > user-level > global-level > default)
+* Proactively use agents matching task requirements without explicit user requests
+* User-defined agents take priority over built-in agents
 
 ## Iterative Collaboration
 Work iteratively to ensure alignment before implementation:
