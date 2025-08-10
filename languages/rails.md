@@ -299,10 +299,10 @@ class Order < ApplicationRecord
 end
 ```
 
-## Vanilla Validations
-* Use built-in Rails validations
-* Custom validators for domain rules
-* Keep validation close to data
+## Models Enforce Their Own Consistency
+* Validations belong in models, not controllers
+* Use built-in Rails validations for common rules
+* Custom validators for domain-specific constraints
 
 ```ruby
 # Good - Rails validations with custom validators
