@@ -35,9 +35,9 @@ create_symlink() {
 
 DIRS_TO_LINK=(
   "agents"
+  "commands"
   "hooks"
   "languages"
-  "prompts"
   "templates"
 )
 

@@ -5,6 +5,7 @@
       "Bash(bin/rake:*)",
       "Bash(bundle exec:*)",
       "Bash(cat:*)",
+      "Bash(cursor:*)",
       "Bash(find:*)",
       "Bash(gh api:*)",
       "Bash(gh pr view:*)",
