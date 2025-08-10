@@ -33,3 +33,11 @@ Each h2 section defines a distinct "Concept" - a referenceable unit of guidance.
 * Each Concept contains a flat bulleted list of instructions
 * Include minimal examples if helpful (especially for code)
 * Use generic names (User, Item, Data) not domain-specific terms
+
+## Git and Github Attribution
+Always clearly identify Claude-generated content in git and Github interactions:
+
+* Prefix all commit messages with `[🤖Claude]: ` before the main message
+* Prefix PR descriptions and all comments with `[🤖Claude]: `
+* This applies to issue comments, PR review comments, and any other Github communication
+* The prefix helps identify when Claude is "driving" and the user is navigating
