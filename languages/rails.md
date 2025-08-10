@@ -299,11 +299,11 @@ class Order < ApplicationRecord
 end
 ```
 
-## Logic Lives Where It Belongs
-* Views handle presentation logic (formatting, conditional display, UI state)
-* Controllers orchestrate requests (authentication, authorization, parameter handling)
-* Models enforce business rules (validations, state transitions, domain logic)
-* Each layer should only know about its own concerns
+## Domain Cohesion Over Layer Separation  
+* Group logic by domain concept, not technical role
+* Rich objects that understand their full context over many single-purpose classes
+* Let views make view decisions, models enforce business rules, controllers orchestrate
+* Extract only when complexity genuinely demands it, not for "purity"
 
 ```ruby
 # Good - each layer handles its own logic
