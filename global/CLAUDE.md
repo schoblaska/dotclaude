@@ -16,13 +16,13 @@ Work iteratively to ensure alignment before implementation:
 Good: Clarify ambiguous request before acting
 Bad: Make extensive changes without confirmation
 
-## Prompt Format
-When writing prompts and CLAUDE.md files:
+## Concept Structure
+Each h2 section defines a distinct "Concept" - a referenceable unit of guidance.
 
-* Use h2 sections for each concept
-* Use flat bullet lists for instructions
+* Concepts use Title Case headers that serve as anchors
+* Other prompts can reference Concepts by their Title Case name
+* Each Concept contains a flat bulleted list of instructions
 * Include minimal examples only where words alone are insufficient
-* No emojis
 * Use generic names (User, Item, Data) not domain-specific terms
 
 ## Meaningful Guidelines

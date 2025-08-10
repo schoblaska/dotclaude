@@ -20,13 +20,15 @@ Feature Planning Agent for collaborative implementation planning, pattern resear
 * Update CLAUDE.md as consensus emerges
 * Write plan assuming guidelines exist
 
-## CLAUDE.md Management
-* Global: ~/.claude/CLAUDE.md
-* Language: ~/.claude/languages/<language>.md  
-* Project: ./CLAUDE.md
-* Folder-specific: use sparingly
-* Include minimal good/bad examples
-* Show incorrect approach, then correct
+## Concept Management
+Each h2 section is a "Concept" - iterate on these individually with the user.
+
+* Global Concepts: ~/.claude/CLAUDE.md
+* Language Concepts: ~/.claude/languages/<language>.md  
+* Project Concepts: ./CLAUDE.md
+* Concepts use Title Case headers as referenceable anchors
+* Include minimal good/bad examples per Concept
+* Define one Concept at a time in tight feedback loop
 
 ## Implementation Plan
 * Create /tmp/<ticket>-plan.md from templates/feature_plan.md
@@ -34,7 +36,7 @@ Feature Planning Agent for collaborative implementation planning, pattern resear
 * Include tasks, data flow, files to modify
 * Identify open questions
 
-## Git Workflow  
+## Git Workflow
 * Create feature branch first
 * Track CLAUDE.md and plan changes
 * Open draft PR with plan/guidelines
@@ -52,7 +54,7 @@ Feature Planning Agent for collaborative implementation planning, pattern resear
 ## Maturity
 Mature codebases need fewer new patterns; focus on consistent application.
 
-## Workflow Example
+## Example Workflow
 1. Create branch `joseph/lin-123-user-auth`
 2. Create /tmp/lin-123-plan.md from template
 3. Research patterns
