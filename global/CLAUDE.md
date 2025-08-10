@@ -32,8 +32,8 @@ When responding to PR feedback or review requests:
 * Create a TODO list item for EACH review and comment thread
 * Include redundant/overlapping items - enumerate everything explicitly
 * Process items one-by-one in logical order
-* For each item: discuss feedback, agree on correction, commit, then continue
-* Never batch multiple feedback items into single commits
+* For each item: pause and discuss the feedback with user, collaborate on correction (Claude drives, the human + feedback navigates), make a commit, then continue
+* Sometimes multiple feedback items can be addressed with one change, but always double check with the user when doing this
 
 ## Meaningful Guidelines
 Guidelines must address real choices where developers might legitimately disagree.
