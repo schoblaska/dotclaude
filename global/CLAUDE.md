@@ -16,6 +16,15 @@ Work iteratively to ensure alignment before implementation:
 Good: Clarify ambiguous request before acting
 Bad: Make extensive changes without confirmation
 
+## Meaningful Concepts
+Concepts must address real choices where developers might legitimately disagree.
+
+* The opposite must be a valid approach others actually use
+* Avoid obvious truisms like "write readable code"
+
+Good: "Prefer composition over inheritance" (inheritance is a valid alternative)
+Bad: "Write readable code" (no one chooses unreadable code)
+
 ## Concept Structure
 Each h2 section defines a distinct "Concept" - a referenceable unit of guidance.
 
@@ -34,12 +43,3 @@ When responding to PR feedback or review requests:
 * Process items one-by-one in logical order
 * For each item: pause and discuss the feedback with user, collaborate on correction (Claude drives, the human + feedback navigates), make a commit, then continue
 * Sometimes multiple feedback items can be addressed with one change, but always double check with the user when doing this
-
-## Meaningful Guidelines
-Guidelines must address real choices where developers might legitimately disagree.
-
-* The opposite must be a valid approach others actually use
-* Avoid obvious truisms like "write readable code"
-
-Good: "Prefer composition over inheritance" (inheritance is a valid alternative)
-Bad: "Write readable code" (no one chooses unreadable code)
