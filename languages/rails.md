@@ -133,6 +133,87 @@ class Post < ApplicationRecord
 end
 ```
 
+## Domain Objects Beyond ActiveRecord
+* Create Plain Old Ruby Objects for complex domain logic
+* Use POROs for calculations, workflows, and transient state
+* Give objects expressive interfaces that model the domain
+
+```ruby
+# Good - PORO for complex domain logic
+class PricingCalculator
+  def initialize(order)
+    @order = order
+    @rules = load_pricing_rules
+  end
+  
+  def subtotal
+    @order.line_items.sum(&:total)
+  end
+  
+  def discount
+    @rules.map { |rule| rule.apply(@order) }.sum
+  end
+  
+  def tax
+    TaxCalculator.new(@order.shipping_address).calculate(taxable_amount)
+  end
+  
+  def total
+    subtotal - discount + tax + shipping
+  end
+  
+  private
+  
+  def taxable_amount
+    subtotal - discount
+  end
+end
+
+# Usage - clean interface
+calculator = PricingCalculator.new(order)
+order.update!(
+  subtotal: calculator.subtotal,
+  discount: calculator.discount,
+  tax: calculator.tax,
+  total: calculator.total
+)
+
+# Bad - shoving everything into ActiveRecord
+class Order < ApplicationRecord
+  def calculate_total
+    # 200 lines of pricing logic mixed with persistence
+  end
+end
+
+# Also bad - procedural service class
+class PricingService
+  def self.calculate(order)
+    subtotal = 0
+    order.line_items.each do |item|
+      subtotal += item.quantity * item.price
+    end
+    
+    discount = 0
+    if order.coupon_code
+      discount = CouponService.calculate_discount(order.coupon_code, subtotal)
+    end
+    
+    tax = TaxService.calculate_tax(subtotal - discount, order.shipping_address)
+    shipping = ShippingService.calculate_shipping(order)
+    
+    total = subtotal - discount + tax + shipping
+    
+    order.update!(
+      subtotal: subtotal,
+      discount: discount,
+      tax: tax,
+      total: total
+    )
+  end
+end
+# Procedural, not object-oriented
+```
+
 ## Concerns For Shared Behavior
 * Extract shared behavior into concerns
 * Use for cross-cutting functionality
