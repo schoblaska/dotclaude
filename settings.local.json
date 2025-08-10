@@ -23,6 +23,12 @@
       "Bash(git checkout:*)",
       "WebFetch(domain:docs.anthropic.com)",
       "WebFetch(domain:github.com)",
+      "~/.claude/CLAUDE.md",
+      "~/.claude/prompts/**",
+      "~/.claude/hooks/**",
+      "~/.claude/agents/**",
+      "~/.claude/templates/**",
+      "~/.claude/languages/**",
       "mcp__linear__get_issue"
     ],
     "deny": []

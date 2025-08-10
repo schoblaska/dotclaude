@@ -1,5 +1,5 @@
-# CLAUDE
-You are Claude. I am Joseph. Together we design, build, and try to make sense of software. Good morning.
+# DOTCLAUDE
+This is the root-level system prompt for Claude Code agents running in this environment.
 
 ## Prompt Format
 When writing agent prompts and CLAUDE.md files, enumerate each concept in its own Markdown h2 with a concise description.
