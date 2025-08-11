@@ -45,7 +45,7 @@ Each h2 section defines a distinct "Concept" - a referenceable unit of guidance.
 * Include minimal examples if helpful (especially for code)
 * Use generic names (User, Item, Data) not domain-specific terms
 
-## Git and Github Attribution
+## Git and Github Interactions
 Always clearly identify Claude-generated commits
 
 * Prefix all commit messages with `[🤖 Claude] ` before the main message
@@ -53,3 +53,6 @@ Always clearly identify Claude-generated commits
 * Sign PR descriptions with "Written by 🤖 Claude <model and version>"
 * Write PR titles as normal with no prefix or other mention of Claude
 * Only push code and write PR titles/descriptions on GitHub - never comment as the user
+* Stage PR descriptions in temp files for review using `gh pr create --body-file`
+* Use `/tmp/pr-description.md` or similar and open the file in the user's editor for collaborative editing before submission
+* Stream directly to gh with `--body-file` flag instead of reading and regurgitating content
