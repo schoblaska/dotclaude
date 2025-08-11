@@ -1,41 +1,44 @@
 # Feature: [FEATURE_NAME]
 
-## Goal
-[One clear sentence describing what we're building]
+## The Approach
+[One sentence: what we're building and how]
 
-## Why Build This
-* [Business value/user need]
-* [How it fits into the larger system]
+## Core Implementation
+```language
+// Minimal code showing the key idea (5-10 lines)
+// This is the essence of our solution
+```
 
-## What We're Building
-* [User-visible behavior]
-* [Key technical requirements]
+## Implementation Steps
 
-## Implementation Approach
+### Step 1: [Foundation]
+```language
+// Key code for this step
+```
+**Verify:** [How to test this works]
 
-### Components to Build
-* [Component 1 and its purpose]
-* [Component 2 and its purpose]
+### Step 2: [Core Feature]
+```language
+// Next piece building on step 1
+```
+**Verify:** [Test for this step]
 
-### Data Flow
-[Simple description of how data moves through the system]
+### Step 3: [Integration]
+```language
+// Connect the pieces
+```
+**Verify:** [End-to-end test]
 
-### Key Files to Modify
-* [File path: what changes and why]
-* [File path: what changes and why]
+## Why This Approach
 
-## Task Breakdown
-1. [First concrete task]
-2. [Second concrete task]
-3. [Continue with ordered tasks]
+### What We Tried
+* **Option A:** [Brief description] - [Why rejected]
+* **Option B:** [Brief description] - [Why rejected]
+* **Chosen:** [Brief description] - [Why selected]
 
-## Testing Strategy
-* [Types of tests needed]
-* [Key scenarios to validate]
+### Key Decisions
+* [Decision 1]: [Reasoning from experiments]
+* [Decision 2]: [What the code revealed]
 
-## Open Questions
-* [Question needing discussion or research]
-* [Technical decision to be made]
-
-## Notes for Implementation Agent
-[Any specific context or gotchas the implementing agent should know]
+## Discovered Patterns
+* [Pattern Name]: [One-line description] → [CLAUDE.md location]
