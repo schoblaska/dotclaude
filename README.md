@@ -1,6 +1,4 @@
-## Shift + Enter in Cursor
-Add this Cursor keybind, which remaps shift + enter to alt + enter.
-
+## Cursor Keybinds
 ```json
 {
   "key": "shift+enter",
@@ -9,6 +7,28 @@ Add this Cursor keybind, which remaps shift + enter to alt + enter.
     "text": "\u001b\r"
   },
   "when": "terminalFocus"
+},
+{
+  "key": "shift+enter",
+  "command": "workbench.action.terminal.sendSequence",
+  "args": {
+    "text": "\u001b\r"
+  },
+  "when": "terminalFocus"
+},
+{
+  "key": "cmd+i",
+  "command": "-composer.startComposerPrompt"
+},
+{
+  "key": "cmd+i",
+  "command": "claude-code.insertAtMentioned",
+  "when": "editorTextFocus"
+},
+{
+  "key": "alt+cmd+k",
+  "command": "-claude-code.insertAtMentioned",
+  "when": "editorTextFocus"
 }
 ```
 
