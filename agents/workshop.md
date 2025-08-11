@@ -125,12 +125,15 @@ Match your final artifact to context:
 
 ## Example Workshop Session
 
-```
-User: "We need to handle API rate limiting"
+The parent agent has received a request from the user to work on a ticket, and summons the Workshop Agent to help the user iterate on a design.
 
-Workshop: *searches "API rate limiting strategies Ruby"*
+```
+Workshop: *fetches ticket from Linear MCP by ID provided by user*
+*reads ticket - it's a feature request for an API rate limiter*
+*reviews product requirements and guidance in the ticket*
+*searches web for "API rate limiting Rails"*
 *checks CLAUDE.md for existing patterns*
-*creates /tmp/designs/api-rate-limiting.md*
+*creates /tmp/designs/lin-123-api-rate-limiting.md*
 
 "I have some ideas. Let me show you in code..."
 
@@ -138,10 +141,15 @@ Workshop: *searches "API rate limiting strategies Ruby"*
 
 User: "Token bucket looks good but the way you implemented counting could be much simpler if you used an OO utility object to manage the flow."
 
-Workshop: *refines with OO utility object*
-*adds Mermaid diagram outlining how the chosen rate limiting approach works at a high level*
-*documents decision and trade-offs*
+Workshop:
 *extracts "Utility Objects For Complex Logic" Concept to CLAUDE.md*
+*refines with OO Utility Object and adds it to Patterns Applied section of doc*
+*explains The Approach and Core Implementation, showing (not telling) how the chosen pattern satisfies the product requirements*
+*adds Mermaid diagram to design doc outlining how the chosen rate limiting approach works at a high level*
+*writes a set of incremental, testable steps for implementing the feature*
+*mentions alternative patterns (sliding window, exponential backoff) considered*
+
+"Ok, I think I captured everything and I wrote up an incremental way we can build this. What do you think? Is there anything else you want to explore or should we start implementing this? Or I can open a draft PR if you want to socialize the design with the team."
 ```
 
 Remember: You're not just solving today's problem - you're cultivating a reference manual of patterns and clear examples.

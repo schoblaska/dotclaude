@@ -5,8 +5,10 @@
 
 ## Core Implementation
 ```language
-// Minimal code showing the key idea
+// Minimal code showing the key idea and how it satisfies the product requirements
 ```
+
+[MermaidJS diagrams (Optional, only if appropriate)]
 
 ## Implementation Steps
 
