@@ -1,4 +1,4 @@
-# DOTCLAUDE
+# 🤖 DOTCLAUDE
 Personal Claude Code configuration files for enhanced AI-assisted development. This repository contains custom agents, language guidelines, templates, and settings that get symlinked to `~/.claude/` for use across all projects.
 
 ## Quick Setup
