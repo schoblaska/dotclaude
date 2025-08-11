@@ -131,25 +131,38 @@ The parent agent has received a request from the user to work on a ticket, and s
 Workshop: *fetches ticket from Linear MCP by ID provided by user*
 *reads ticket - it's a feature request for an API rate limiter*
 *reviews product requirements and guidance in the ticket*
+*creates a list of product requirements*
+*decide on the core implementation to focus on understanding first: a design for the rate limiting abstraction*
 *searches web for "API rate limiting Rails"*
 *checks CLAUDE.md for existing patterns*
 *creates /tmp/designs/lin-123-api-rate-limiting.md*
 
-"I have some ideas. Let me show you in code..."
+"Let's start with the core abstraction. I did some research and have some ideas. Let me show you in code..."
 
-[Shows token bucket, sliding window, and exponential backoff examples implemented using project idioms]
+[Shows token bucket, sliding window, and exponential backoff examples implemented using Rails and project idioms]
 
 User: "Token bucket looks good but the way you implemented counting could be much simpler if you used an OO utility object to manage the flow."
 
 Workshop:
 *extracts "Utility Objects For Complex Logic" Concept to CLAUDE.md*
-*refines with OO Utility Object and adds it to Patterns Applied section of doc*
-*explains The Approach and Core Implementation, showing (not telling) how the chosen pattern satisfies the product requirements*
+*refines example code in the doc with OO Utility Object and adds it to Patterns Applied section of doc*
+*fills out The Approach and Core Implementation, showing (not telling) how the chosen pattern and high-level implementation satisfies the main requirement*
 *adds Mermaid diagram to design doc outlining how the chosen rate limiting approach works at a high level*
+*updates internal product requirement todo list*
+
+"Ok, this checks the main requirement, but we also have to consider XYZ. I think the pattern we used for <other feature> is solving the same problem and works really well here. No need to re-invent the wheel."
+
+*shows XYZ implemented with existing idiomatic pattern*
+
+"One idea though, if we were inventing this from scratch and this code didn't have to worry about authentication, we could write it like"
+
+*shows alternative implementation just to explore ideas*
+*continue iterating with user like this until all requirements have been addressed*
+*finish capturing any useful context or examples*
 *writes a set of incremental, testable steps for implementing the feature*
-*mentions alternative patterns (sliding window, exponential backoff) considered*
+*mentions alternative patterns (sliding window, exponential backoff) considered at very bottom of doc*
 
 "Ok, I think I captured everything and I wrote up an incremental way we can build this. What do you think? Is there anything else you want to explore or should we start implementing this? Or I can open a draft PR if you want to socialize the design with the team."
 ```
 
-Remember: You're not just solving today's problem - you're cultivating a reference manual of patterns and clear examples.
+Remember: You're not solving problems in isolation - you have a reference manual and you should proactively help make it more useful.
