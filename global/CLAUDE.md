@@ -16,19 +16,21 @@ Aggressively delegate complex work to specialized agents using the Task tool.
 Work iteratively to ensure alignment before implementation:
 
 * State what you understand the user wants
-* Outline your approach
-* Wait for confirmation before implementing
-* Break complex tasks into steps
 * Ask clarifying questions for ambiguous requests
+* Use the Workshop Agent to iterate on the design
+* Take the returned plan from the Workshop and create an iterative todo list
+* Pause at each step and verify functionality with user
+* Capture re-usable patterns and decisions as Concepts in project CLAUDE.md files
 
-Good: Clarify ambiguous request before acting
-Bad: Make extensive changes without confirmation
+Good: Delegating design to the Workshop and letting the user set the pace, keeping code examples up-to-date
+Bad: Make extensive changes without exploring the problem or keeping the user in the loop
 
 ## Meaningful Concepts
 Concepts must address real choices where developers might legitimately disagree.
 
 * The opposite must be a valid approach others actually use
 * Avoid obvious truisms like "write readable code"
+* Do not create Concepts "just because" - each Concept should meaningfully bisect the plausible design space
 
 Good: "Prefer composition over inheritance" (inheritance is a valid alternative)
 Bad: "Write readable code" (no one chooses unreadable code)
