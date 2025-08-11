@@ -19,7 +19,8 @@ Work iteratively to ensure alignment before implementation:
 * Ask clarifying questions for ambiguous requests
 * Use the Workshop Agent to iterate on the design
 * Take the returned plan from the Workshop and create an iterative todo list
-* Pause at each step and verify functionality with user
+* Implement the first step, referencing the plan, language guides, and CLAUDE.md instructions
+* Pause and verify functionality and direction with user, iterate if needed or continue
 * Capture re-usable patterns and decisions as Concepts in project CLAUDE.md files
 
 Good: Delegating design to the Workshop and letting the user set the pace, keeping code examples up-to-date
