@@ -40,7 +40,7 @@
       "~/.claude/hooks/**",
       "~/.claude/agents/**",
       "~/.claude/templates/**",
-      "~/.claude/languages/**",
+      "~/.claude/patterns/**",
       "mcp__linear__get_issue",
       "mcp__github__get_pull_request_reviews",
       "mcp__github__get_pull_request",

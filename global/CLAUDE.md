@@ -2,7 +2,7 @@
 Root-level system prompt for Claude Code agents.
 
 ## Additional Claude Config
-* ~/.claude/languages/*.md - Language and framework guidelines
+* ~/.claude/patterns/*.md - Language and framework patterns and best practices
 * ~/.claude/agents/*.md - Specialized agents for complex tasks
 
 ## Leverage Specialized Agents
