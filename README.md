@@ -56,16 +56,23 @@ Put in `.claude/settings.local.json` inside the project.
 
 ```json
 {
-  "allowedTools": [
-    "Edit",
-    "Read",
-    "Write",
-    "Bash(git add:*)",
-    "Bash(git commit:*)",
-    "Bash(npm:*)",
-    "Bash(python:*)",
-    "Bash(pytest:*)"
-  ]
+  "permissions": {
+    "allow": [
+      "Edit",
+      "Read",
+      "Write",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(npm:*)",
+      "Bash(python:*)",
+      "Bash(pytest:*)",
+      "Bash(ruby:*)",
+      "Bash(bin/rails:*)",
+      "Bash(bin/rake:*)",
+      "Bash(bundle exec:*)"
+    ],
+    "deny": []
+  }
 }
 ```
 
