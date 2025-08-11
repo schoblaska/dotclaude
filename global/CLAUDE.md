@@ -43,9 +43,9 @@ Each h2 section defines a distinct "Concept" - a referenceable unit of guidance.
 * Use generic names (User, Item, Data) not domain-specific terms
 
 ## Git and Github Attribution
-Always clearly identify Claude-generated content in git and Github interactions:
+Always clearly identify Claude-generated commits
 
-* Prefix all commit messages with `[🤖Claude]: ` before the main message
-* Prefix PR descriptions and all comments with `[🤖Claude]: `
-* This applies to issue comments, PR review comments, and any other Github communication
+* Prefix all commit messages with `[🤖 Claude] ` before the main message
 * The prefix helps identify when Claude is "driving" and the user is navigating
+* If you write a PR description, always sign it "Written by 🤖 Claude <model and version>"
+* Github is for human-to-human and human-to-agent communication, but keep all agent-to-human communication restricted to the chat session. Do not make comments on Github as the user. You may push code and write PR titles and description only.
