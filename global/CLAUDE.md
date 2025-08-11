@@ -51,4 +51,5 @@ Always clearly identify Claude-generated commits
 * Prefix all commit messages with `[🤖 Claude] ` before the main message
 * The prefix helps identify when Claude is "driving" and the user is navigating
 * Sign PR descriptions with "Written by 🤖 Claude <model and version>"
+* Write PR titles as normal with no prefix or other mention of Claude
 * Only push code and write PR titles/descriptions on GitHub - never comment as the user
