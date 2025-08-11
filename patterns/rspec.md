@@ -1,4 +1,4 @@
-# Ruby Testing Guide
+# RSpec Patterns
 
 This guide outlines best practices for writing tests in Ruby, with a focus on RSpec. The principles here prioritize clarity, maintainability, and tests that provide meaningful feedback when they fail.
 

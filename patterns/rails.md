@@ -1,4 +1,4 @@
-# Rails Guidelines
+# Rails Patterns
 
 ## Rich Domain Models
 * Put business logic in models that own the data
@@ -299,7 +299,7 @@ class Order < ApplicationRecord
 end
 ```
 
-## Domain Cohesion Over Layer Separation  
+## Domain Cohesion Over Layer Separation
 * Group logic by domain concept, not technical role
 * Rich objects that understand their full context over many single-purpose classes
 * Let views make view decisions, models enforce business rules, controllers orchestrate

@@ -1,4 +1,4 @@
-# Ruby Guidelines
+# Ruby Patterns
 
 ## Expressive Objects Over Procedural Code
 * Design objects with intuitive interfaces that minimize surprise
