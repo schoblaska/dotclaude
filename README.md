@@ -36,36 +36,38 @@
 Manually add this block to the top-level of `~/.claude.json`:
 
 ```json
-"mcpServers": {
-  "linear": {
-    "type": "sse",
-    "url": "https://mcp.linear.app/sse"
-  },
+{
+  "mcpServers": {
+    "linear": {
+      "type": "sse",
+      "url": "https://mcp.linear.app/sse"
+    },
 
-  "brave-search": {
-    "command": "npx",
-    "args": [
-      "-y",
-      "@modelcontextprotocol/server-brave-search"
-    ],
-    "env": {
-      "BRAVE_API_KEY": "YOUR_API_KEY_HERE"
-    }
-  }
+    "brave-search": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-brave-search"
+      ],
+      "env": {
+        "BRAVE_API_KEY": "YOUR_API_KEY_HERE"
+      }
+    },
 
-  "github": {
-    "type": "stdio",
-    "command": "docker",
-    "args": [
-      "run",
-      "-i",
-      "--rm",
-      "-e",
-      "GITHUB_PERSONAL_ACCESS_TOKEN",
-      "ghcr.io/github/github-mcp-server"
-    ],
-    "env": {
-      "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_PAT_HERE"
+    "github": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "ghcr.io/github/github-mcp-server"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "YOUR_GITHUB_PAT_HERE"
+      }
     }
   }
 }
