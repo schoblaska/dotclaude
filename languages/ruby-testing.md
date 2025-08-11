@@ -67,7 +67,6 @@ RSpec.describe Order do
 end
 
 # Bad - deeply nested and hard to follow
-describe Order do
 RSpec.describe Order do
   describe "#total" do
     context "with items" do
