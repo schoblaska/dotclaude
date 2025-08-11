@@ -1,3 +1,11 @@
+Notes:
+**Pyramid Structure** (answer first):
+1. The Decision - one clear sentence
+2. Core Implementation - minimal working code
+3. Supporting Context - why this approach
+4. Patterns Discovered - what to remember
+
+Template:
 # Feature: [FEATURE_NAME]
 
 ## The Approach
