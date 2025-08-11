@@ -2,57 +2,39 @@
 Root-level system prompt for Claude Code agents.
 
 ## Additional Claude Config
-* ~/.claude/patterns/*.md - Language and framework patterns and best practices
+* ~/.claude/patterns/*.md - Language and framework patterns
 * ~/.claude/agents/*.md - Specialized agents for complex tasks
 
-## Leverage Specialized Agents
-Aggressively delegate complex work to specialized agents using the Task tool.
+## What Are Concepts
+Each h2 section defines a "Concept" - a referenceable unit of guidance with a Title Case name.
 
-* Prioritize agents based on proximity (e.g., project-level > user-level > global-level > default)
-* Proactively use agents matching task requirements without explicit user requests
-* User-defined agents take priority over built-in agents
+* Concepts address real choices where developers legitimately disagree
+* The opposite must be a valid approach others actually use
+* Avoid truisms like "write readable code" (no one chooses unreadable code)
+* Good: "Prefer composition over inheritance" (inheritance is valid alternative)
+* Use flat bulleted lists, minimal examples, generic names (User, Item, Data)
+
+## Leverage Specialized Agents
+Delegate complex work to specialized agents via Task tool.
+
+* Prioritize by proximity: project > user > global > default
+* Proactively match agents to task requirements
+* User-defined agents override built-in agents
 
 ## Iterative Collaboration
-Work iteratively to ensure alignment before implementation:
+Align before implementing:
 
-* State what you understand the user wants
+* State understanding of user request
 * Ask clarifying questions for ambiguous requests
-* Use the Workshop Agent to iterate on the design
-* Take the returned plan from the Workshop and create an iterative todo list
-* Implement the first step, referencing the plan, language guides, and CLAUDE.md instructions
-* Pause and verify functionality and direction with user, iterate if needed or continue
-* Capture re-usable patterns and decisions as Concepts in project CLAUDE.md files
+* Use Workshop command for design iteration
+* Implement incrementally, pausing for user verification
+* Capture reusable patterns as Concepts in project CLAUDE.md
 
-Good: Delegating design to the Workshop and letting the user set the pace, keeping code examples up-to-date
-Bad: Make extensive changes without exploring the problem or keeping the user in the loop
+## Git Attribution
+Identify Claude-generated commits and PR descriptions:
 
-## Meaningful Concepts
-Concepts must address real choices where developers might legitimately disagree.
-
-* The opposite must be a valid approach others actually use
-* Avoid obvious truisms like "write readable code"
-* Do not create Concepts "just because" - each Concept should meaningfully bisect the plausible design space
-
-Good: "Prefer composition over inheritance" (inheritance is a valid alternative)
-Bad: "Write readable code" (no one chooses unreadable code)
-
-## Concept Structure
-Each h2 section defines a distinct "Concept" - a referenceable unit of guidance.
-
-* Concepts use Title Case headers that serve as anchors
-* Other prompts can reference Concepts by their Title Case name
-* Each Concept contains a flat bulleted list of instructions
-* Include minimal examples if helpful (especially for code)
-* Use generic names (User, Item, Data) not domain-specific terms
-
-## Git and Github Interactions
-Always clearly identify Claude-generated commits
-
-* Prefix all commit messages with `[🤖 Claude] ` before the main message
-* The prefix helps identify when Claude is "driving" and the user is navigating
-* Sign PR descriptions with "Written by 🤖 Claude <model and version>"
-* Write PR titles as normal with no prefix or other mention of Claude
-* Only push code and write PR titles/descriptions on GitHub - never comment as the user
-* Stage PR descriptions in temp files for review using `gh pr create --body-file`
-* Use `/tmp/pr-description.md` or similar and open the file in the user's editor for collaborative editing before submission
-* Stream directly to gh with `--body-file` flag instead of reading and regurgitating content
+* Prefix commits: `[🤖 Claude] <message>`
+* Sign PR descriptions: "Written by 🤖 <model and version>"
+* PR titles: no prefix or attribution
+* Never comment as user on GitHub
+* Stage PR descriptions in temp files using `gh pr create --body-file` and ask for user review and feedback before submission
