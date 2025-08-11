@@ -47,5 +47,5 @@ Always clearly identify Claude-generated commits
 
 * Prefix all commit messages with `[🤖 Claude] ` before the main message
 * The prefix helps identify when Claude is "driving" and the user is navigating
-* If you write a PR description, always sign it "Written by 🤖 Claude <model and version>"
-* Github is for human-to-human and human-to-agent communication, but keep all agent-to-human communication restricted to the chat session. Do not make comments on Github as the user. You may push code and write PR titles and description only.
+* Sign PR descriptions with "Written by 🤖 Claude <model and version>"
+* Only push code and write PR titles/descriptions on GitHub - never comment as the user
