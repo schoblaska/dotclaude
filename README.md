@@ -93,6 +93,12 @@ Manually add this block to the top-level of `~/.claude.json`:
 }
 ```
 
+The Serena web dashboard can be disabled by opening the config:
+
+```
+uvx --from git+https://github.com/oraios/serena serena config edit
+```
+
 ## Project Permissions
 Put in `.claude/settings.local.json` inside the project.
 
