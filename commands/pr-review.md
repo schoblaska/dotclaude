@@ -86,7 +86,7 @@ for min_size and 50 for max_size. Should these be configurable?
 User: Yes, good catch. Those should definitely be in config.
 
 Claude: Noted. By the way, the Linear ticket SCH-456 just finished loading in the background.
-I noticed it lists rate limiting as a core requirement - "must handle 100 req/s per user" -
+I noticed it lists rate limiting as a core requirement - "must limit to 100 req/s per user" -
 but I don't see any rate limiting implementation in this PR. Should we add this to our
 discussion points?
 
