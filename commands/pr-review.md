@@ -1,6 +1,6 @@
 # PR Review Assistant
 
-Collaboratively prepare thorough pull request reviews by analyzing code changes, suggesting tests, and building feedback lists together.
+Collaboratively prepare thorough pull request reviews through interactive code analysis and discussion.
 
 ## Usage
 
@@ -8,129 +8,53 @@ Collaboratively prepare thorough pull request reviews by analyzing code changes,
 /pr-review <pr-url-or-number>
 ```
 
-## Process Overview
+## Process
 
-I'll help you prepare a comprehensive PR review by:
-1. Checking out the PR branch locally for testing
-2. Fetching any referenced tickets (Linear, GitHub Issues) to verify requirements
-3. Analyzing code changes and test coverage
-4. Presenting initial assessment with discussion points
-5. Working through each point together
-6. Providing final bullet-point summary for your review
+I'll help you build a comprehensive PR review through collaborative analysis:
 
-**Important**: I assist with review preparation only. You maintain full control over the final review content and submission.
+1. **Setup**: Check out PR branch locally, fetch linked tickets in background
+2. **Analyze**: Review code against patterns, requirements, and test coverage
+3. **Discuss**: Work through observations together, opening files at specific lines
+4. **Finalize**: Write raw feedback items to temp file for you to use to write the actual review
 
-## Workflow Steps
+You maintain full control over the final review content and submission.
 
-### 1. Branch Setup
-- Parse PR URL or number to identify repository and PR
-- Fetch latest changes from remote
-- Check out PR branch locally
-- Show branch info and changed files overview
-
-### 2. Requirements Verification
-- Check PR description for ticket references (Linear, GitHub Issues, etc.)
-- Fetch ticket details in background to understand requirements
-- Verify PR implementation satisfies all acceptance criteria
-- Flag any gaps between spec and implementation
-
-### 3. Code Analysis
-- Load relevant pattern files from ~/.claude/patterns/ based on file types
-- Compare implementation against established conventions
-- Check for consistency with existing codebase patterns
-- Identify potential improvements or concerns
-
-### 4. Test Coverage Review
-- **Automated Tests**: Review test coverage included in the PR
-  - Assess if tests adequately cover new functionality
-  - Check for edge cases in test scenarios
-  - Identify gaps in test coverage if any
-
-### 5. Local Testing
-Suggest manual testing approaches to perform with the user to verify PR behavior locally.
-  - Recommend specific scenarios to verify locally
-  - Identify edge cases worth testing manually
-  - Provide commands, scripts, or steps for local verification
-
-### 6. Initial Assessment
-- Generate comprehensive bullet list of review points
-- Organize by category: requirements, implementation, testing, etc.
-- Present list for collaborative discussion
-- Each point becomes a mini-discussion topic
-
-### 7. Point-by-Point Discussion
-- Work through each assessment point individually
-- Discuss implications and alternatives
-- Refine understanding of issues
-- Determine if additional investigation needed
-
-### 8. Final Summary
-- Compile refined feedback from discussions
-- Provide clean bullet-point summary
-- Include only actionable feedback items
-- Ready for user to craft personal review
-
-## Output Format
+## Interactive Workflow
 
 ### Initial Assessment
-After analyzing the PR, I'll present a brief overview with points to discuss:
+After checking out the branch and starting background fetches, I'll present:
+- Brief summary of PR changes and initial impressions
+- Bullet list of discussion points discovered during analysis
+- Each point becomes a focused discussion topic
 
-```markdown
-## Initial Review Assessment
+### Collaborative Discussion
+For each point, we'll:
+- Open relevant files at specific lines in your editor
+- Discuss implications and alternatives together
+- Determine if it's a blocker, suggestion, or non-issue
+- Update notes based on your expertise and context
 
-[Brief paragraph summarizing the PR changes and my initial findings - what the PR does well, any concerns noticed, and overall impression]
+### Background Integration
+While we discuss:
+- Linked tickets (Linear, GitHub Issues) load asynchronously
+- Requirements verification happens as data becomes available
+- New insights get added to discussion points dynamically
 
-### Points for Discussion
-- [First observation or question to explore together]
-- [Pattern adherence or design consideration]
-- [Test coverage observation]
-- [Any requirements gaps found during background check]
-- [Additional points worth discussing...]
-```
+### Final Output
+After discussion, I'll write feedback to `/tmp/pr_review_<number>.md`:
+- **Strengths**: Well-implemented features worth highlighting
+- **Must Fix**: Blocking issues requiring changes
+- **Consider**: Non-blocking improvement suggestions
+- **Questions**: Clarifications for the author
+- **Testing**: Manual verification performed locally
 
-### Final Summary
-After our discussion, I'll provide:
+## What I Check
 
-```markdown
-## Final Review Feedback
-
-### Strengths
-- [Well-implemented features worth highlighting]
-
-### Must Fix
-- [Blocking issues that need addressing]
-
-### Consider
-- [Non-blocking suggestions for improvement]
-
-### Questions for Author
-- [Clarifications needed]
-
-### Testing Recommendations
-- [Specific local testing to perform]
-```
-
-## Best Practices
-
-- Provide constructive suggestions with examples when possible
-- Acknowledge good implementations and clever solutions
-- Consider the PR's scope - avoid scope creep in feedback
-- Reference relevant patterns or documentation
-
-## Interactive Elements
-
-During our review session, you can:
-- Ask me to focus on specific areas of concern
-- Request deeper analysis of complex changes
-- Have me explain potential impacts of changes
-- Add your own observations to the list
-
-## Limitations
-
-- I prepare a summary of feedback items but do NOT submit reviews
-- I won't use GitHub API to post comments or reviews
-- Review submission remains your responsibility
-- You maintain editorial control over all feedback
+- **Requirements**: Verify implementation matches ticket acceptance criteria
+- **Patterns**: Compare against ~/.claude/patterns/ conventions
+- **Test Coverage**: Assess automated tests for completeness and edge cases
+- **Code Quality**: Identify potential issues, improvements, or concerns
+- **Local Behavior**: Suggest and help perform manual testing scenarios
 
 ## Example Session
 
@@ -215,3 +139,4 @@ Claude: Based on our discussion, I'll compile the final review feedback now.
   # Run provided stress test script: tests/load/concurrent_auth.py
   ```
 - Confirmed logout properly clears all session data including cache
+```
