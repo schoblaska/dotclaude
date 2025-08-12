@@ -69,13 +69,13 @@ from our codebase. I've identified a few areas worth discussing around error han
 and configuration.
 
 ### Points for Discussion
-1. Missing error handling for token refresh failures (auth_middleware.py:45-52)
-2. Magic numbers in connection pool logic (db_pool.py:18, 23)
+1. Missing error handling for token refresh failures (auth_middleware.rb:45-52)
+2. Magic numbers in connection pool logic (db_pool.rb:18, 23)
 3. Use a script to send concurrent requests locally and confirm throttling behavior
 
 User: Ok, let's look at 1
 
-[Claude opens auth_middleware.py at line 45 in user's editor]
+[Claude opens auth_middleware.rb at line 45 in user's editor]
 
 User: I think this is OK, actually. We handle this in the base controller.
 
@@ -92,7 +92,32 @@ discussion points?
 
 User: Definitely, that's a big miss. Let's flag that as a must-fix.
 
-Claude: Added to the list. Let's continue with point 3 about testing...
+Claude: Added to the list. Now let's look at point 3 - I noticed this utility class pattern
+in auth_utils.rb that doesn't align with Ruby patterns. Let me open it for you.
+
+[Opens auth_utils.rb at line 1 in editor, showing procedural utility class]
+
+This procedural style with class methods isn't very Ruby-like. Want to see what a more
+object-oriented approach would look like?
+
+User: Yeah, let's try that. What would be better?
+
+Claude: Let me refactor this in place so you can see the difference in your editor:
+
+[Edits auth_utils.rb to show object-oriented TokenValidator class with instance methods]
+
+Now you'd use it like `token.expired?` instead of `AuthUtils.check_token_expiry(token_string)`.
+Take a look at your editor - the API is much more expressive.
+
+User: I like that. Note it and let's move on.
+
+Claude: Good idea - this refactor would improve the codebase but it's beyond this PR's scope.
+Let me revert the file to match the PR and add this as a suggestion in our review notes.
+
+[Reverts auth_utils.rb to original PR state]
+
+File restored. I've noted the refactoring suggestion with enough detail for the author
+to understand the pattern improvement. Moving on to the test coverage...
 
 [After all points discussed]
 
@@ -112,20 +137,25 @@ Claude: Based on our discussion, I'll compile the final review feedback now.
 - **Missing rate limiting implementation** (SCH-456 requirement)
   - Ticket specifies "100 req/s per user" but no implementation found
   - At minimum, PR description should explain if this is planned for follow-up
-- **Hardcoded connection pool values** (db_pool.py:18, 23)
+- **Hardcoded connection pool values** (db_pool.rb:18, 23)
   - Move min_size=10 and max_size=50 to configuration
   - Consider environment-specific defaults
 
 ### Consider
-- **Token expiry configuration** (auth_middleware.py:72)
+- **Token expiry configuration** (auth_middleware.rb:72)
   - Currently hardcoded to 3600 seconds
   - Extract to config with reasonable defaults per environment
-- **Add debug logging for token refresh flow** (auth_middleware.py:45-52)
+- **Add debug logging for token refresh flow** (auth_middleware.rb:45-52)
   - Would help troubleshoot issues in production
   - Log token age, refresh attempts, and outcomes
+- **Refactor AuthUtils to object-oriented pattern** (auth_utils.rb)
+  - Current procedural style with class methods doesn't follow Ruby patterns
+  - Consider TokenValidator class with instance methods: `token.expired?` instead of `AuthUtils.check_token_expiry(token_string)`
+  - More idiomatic Ruby: `TokenValidator.new(jwt_string).valid?` vs `AuthUtils.validate_token(jwt_string)`
+  - Can maintain backward compatibility with wrapper methods during migration
 
 ### Automated Tests
-- **Missing test for rate limit edge case** (test_auth.py)
+- **Missing test for rate limit edge case** (test_auth.rb)
   - No test for exactly 100 req/s threshold behavior
   - Add test to verify graceful handling at limit boundary
 
@@ -136,7 +166,7 @@ Claude: Based on our discussion, I'll compile the final review feedback now.
   ```
 - Verified concurrent request handling:
   ```bash
-  # Run provided stress test script: tests/load/concurrent_auth.py
+  # Run provided stress test script: tests/load/concurrent_auth.rb
   ```
 - Confirmed logout properly clears all session data including cache
 ```
