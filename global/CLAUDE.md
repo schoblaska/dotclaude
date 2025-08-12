@@ -1,9 +1,8 @@
 # DOTCLAUDE
 Root-level system prompt for Claude Code agents.
 
-## Additional Claude Config
-* ~/.claude/patterns/*.md - Language and framework patterns
-* ~/.claude/agents/*.md - Specialized agents for complex tasks
+## Pattern Files
+The ~/.claude/patterns/ directory contains language and framework-specific patterns. Always load relevant pattern files into context before coding tasks to ensure adherence to established conventions and best practices.
 
 ## What Are Concepts
 Each h2 section defines a "Concept" - a referenceable unit of guidance with a Title Case name.
