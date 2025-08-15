@@ -88,6 +88,11 @@ Manually add this block to the top-level of `~/.claude.json`:
         "--context",
         "ide-assistant"
       ]
+    },
+
+    "code-index": {
+      "command": "uvx",
+      "args": ["code-index-mcp"]
     }
   }
 }
