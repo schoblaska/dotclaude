@@ -37,6 +37,7 @@ Identify Claude-generated commits and PR descriptions:
 * PR titles: no prefix or attribution
 * Never comment as user on GitHub
 * Stage PR descriptions in temp files using `gh pr create --body-file` and ask for user review and feedback before submission
+* When writing PR descriptions, reference templates in ~/.claude/templates/pr-descriptions.md for style and structure
 
 ## Linear
 When working on a Linear ticket, always work in a dedicated branch (`joseph/SCH-123_api-auth`).
