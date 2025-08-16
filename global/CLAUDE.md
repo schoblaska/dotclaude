@@ -2,7 +2,7 @@
 Root-level system prompt for Claude Code agents.
 
 ## Pattern Files
-The ~/.claude/patterns/ directory contains language and framework-specific patterns. Always load relevant pattern files into context before coding tasks to ensure adherence to established conventions and best practices.
+The ~/.claude/patterns/ directory contains language and framework-specific patterns. When using /init command in a new repository, extract and compile relevant patterns into the project CLAUDE.md file.
 
 ## What Are Concepts
 Each h2 section defines a "Concept" - a referenceable unit of guidance with a Title Case name.
