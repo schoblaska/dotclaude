@@ -93,6 +93,11 @@ Manually add this block to the top-level of `~/.claude.json`:
     "code-index": {
       "command": "uvx",
       "args": ["code-index-mcp"]
+    },
+
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
     }
   }
 }
