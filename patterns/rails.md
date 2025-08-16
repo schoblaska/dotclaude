@@ -1,398 +1,570 @@
 # Rails Patterns
 
-## Rich Domain Models
-* Put business logic in models that own the data
-* Use methods that read like natural language
-* Avoid service objects for model-specific operations
-* Models handle their own persistence and validation
+## Vanilla Rails Architecture
+* Use Rails as designed without unnecessary abstraction layers
+* Controllers directly interact with rich domain models
+* Extract complexity through concerns and POROs, not service objects
+* Let each layer handle its natural responsibilities
 
 ```ruby
-# Good - rich domain model
-class Article < ApplicationRecord
-  def publish!
-    self.published_at = Time.current
-    self.status = 'published'
-    notify_subscribers
-    save!
-  end
-
-  def archive!
-    update!(archived: true, archived_at: Time.current)
-  end
-
-  private
-
-  def notify_subscribers
-    # Side effect handled by model
-    subscribers.each { |s| ArticleMailer.published(s, self).deliver_later }
+# Good - direct model interaction
+class ArticlesController < ApplicationController
+  def publish
+    @article = Article.find(params[:id])
+    
+    if @article.publish!
+      redirect_to @article, notice: "Article published"
+    else
+      render :edit, alert: @article.errors.full_messages
+    end
   end
 end
 
-article.publish!
+class Article < ApplicationRecord
+  def publish!
+    return false unless publishable?
+    
+    transaction do
+      self.published_at = Time.current
+      self.status = :published
+      save! && notify_subscribers
+    end
+  end
+  
+  private
+  
+  def publishable?
+    valid? && draft? && author.can_publish?
+  end
+  
+  def notify_subscribers
+    subscribers.find_each { |s| ArticleMailer.published(s, self).deliver_later }
+  end
+end
 
-# Bad - anemic model with service
+# Bad - unnecessary service layer
 class PublishArticleService
-  def call(article)
+  def self.call(article, publisher)
+    return false unless article.valid?
+    return false unless article.draft?
+    return false unless publisher.can_publish?
+    
     article.published_at = Time.current
-    article.status = 'published'
-    article.save!
-    NotificationService.new.notify_about(article)
+    article.status = :published
+    
+    if article.save
+      NotificationService.notify_subscribers(article)
+      true
+    else
+      false
+    end
+  end
+end
+```
+
+## Bold Domain Language
+* Use expressive, memorable method names that tell a story
+* Choose formal, intentional terminology over generic terms
+* Methods should read like business narratives
+* Inject personality into your domain models
+
+```ruby
+# Good - bold, expressive language
+class Subscription
+  def terminate_with_prejudice!
+    transaction do
+      cancel_immediately
+      revoke_all_access
+      erect_tombstone
+      incinerate_payment_methods
+    end
+  end
+  
+  def grant_clemency(days: 30)
+    push_expiration(days.days.from_now)
+    dispatch_reprieve_notice
+  end
+  
+  private
+  
+  def erect_tombstone
+    Tombstone.create!(
+      subscription: self,
+      epitaph: cancellation_reason,
+      mourners: affected_users
+    )
+  end
+end
+
+class Document
+  def ratify!
+    self.ratified_at = Time.current
+    seal_with_authority(current_user)
+    promulgate_to_stakeholders
+    save!
+  end
+end
+
+# Bad - generic, forgettable naming
+class Subscription
+  def cancel
+    self.status = 'cancelled'
+    self.cancelled_at = Time.current
+    remove_access
+    delete_payment_methods
+    save
+  end
+  
+  def extend_trial(days)
+    self.expires_at = days.days.from_now
+    send_email
+    save
+  end
+end
+```
+
+## Rich Domain Models
+* Blend persistence and business logic naturally in Active Record models
+* Models own their data and the operations on that data
+* Use methods that read like natural language
+* Handle complex operations without extracting to service objects
+
+```ruby
+# Good - rich model handling complex operations
+class Order < ApplicationRecord
+  has_many :line_items
+  belongs_to :customer
+  
+  def submit!
+    transaction do
+      validate_inventory!
+      calculate_pricing
+      charge_payment
+      self.submitted_at = Time.current
+      save!
+      dispatch_to_fulfillment
+    end
+  end
+  
+  def calculate_pricing
+    self.subtotal = line_items.sum(&:total)
+    self.discount = best_available_discount
+    self.tax = TaxCalculator.for_address(shipping_address).calculate(taxable_amount)
+    self.total = subtotal - discount + tax + shipping_cost
+  end
+  
+  private
+  
+  def validate_inventory!
+    out_of_stock = line_items.select { |item| !item.in_stock?(item.quantity) }
+    raise OutOfStockError, out_of_stock if out_of_stock.any?
+  end
+  
+  def charge_payment
+    PaymentProcessor.charge(customer.payment_method, total)
+  rescue PaymentError => e
+    errors.add(:payment, e.message)
+    raise ActiveRecord::Rollback
+  end
+  
+  def dispatch_to_fulfillment
+    FulfillmentJob.perform_later(self)
+  end
+end
+
+# Bad - anemic model with service object
+class Order < ApplicationRecord
+  # Just data, no behavior
+end
+
+class OrderSubmissionService
+  def initialize(order)
+    @order = order
+  end
+  
+  def submit
+    return false unless validate_inventory
+    
+    calculate_pricing
+    
+    if charge_payment
+      @order.submitted_at = Time.current
+      @order.save
+      dispatch_to_fulfillment
+      true
+    else
+      false
+    end
+  end
+  
+  # ... lots of private methods ...
+end
+```
+
+## Concerns For Domain Traits
+* Use concerns to represent cohesive domain traits or "acts as" semantics
+* Place model-wide concerns in `app/models/concerns/`
+* Place model-specific concerns in `app/models/<model_name>/`
+* Never use concerns as arbitrary code containers
+
+```ruby
+# Good - concern representing a genuine trait
+# app/models/concerns/reviewable.rb
+module Reviewable
+  extend ActiveSupport::Concern
+  
+  included do
+    has_many :reviews, as: :reviewable
+    
+    scope :highly_rated, -> { where("average_rating >= ?", 4.0) }
+    scope :needs_moderation, -> { where(moderation_status: :pending) }
+  end
+  
+  def approve!
+    self.moderation_status = :approved
+    self.approved_at = Time.current
+    save! && notify_approval
+  end
+  
+  def calculate_average_rating
+    reviews.average(:rating) || 0
+  end
+  
+  def reviewable_by?(user)
+    user != author && user.has_purchased?(self)
+  end
+end
+
+# app/models/user/authenticatable.rb
+module User::Authenticatable
+  extend ActiveSupport::Concern
+  
+  included do
+    has_secure_password
+    
+    before_save :downcase_email
+    after_update :revoke_sessions_if_password_changed
+  end
+  
+  def authenticate_with_token(token)
+    BCrypt::Password.new(remember_digest).is_password?(token)
+  end
+  
+  def initiate_password_reset
+    generate_reset_token
+    dispatch_reset_instructions
+  end
+end
+
+# Bad - concern as junk drawer
+module UserStuff
+  extend ActiveSupport::Concern
+  
+  def calculate_age
+    ((Time.current - birthdate.to_time) / 1.year).floor
+  end
+  
+  def full_name
+    "#{first_name} #{last_name}"
+  end
+  
+  def has_orders?
+    orders.any?
+  end
+  
+  # Random unrelated methods dumped together
+end
+```
+
+## Database-Backed Enums
+* Use Rails enums for status fields with rich behavior
+* Get free scopes and predicates that read naturally
+* Combine with state-specific logic in the model
+
+```ruby
+# Good - rich enum usage
+class Shipment < ApplicationRecord
+  enum status: {
+    pending: 0,
+    processing: 1,
+    shipped: 2,
+    in_transit: 3,
+    delivered: 4,
+    returned: 5,
+    lost: 6
+  }
+  
+  def advance_status!
+    return false if delivered? || returned? || lost?
+    
+    next_status = self.class.statuses.keys[self.class.statuses[status] + 1]
+    update!(
+      status: next_status,
+      "#{next_status}_at": Time.current
+    )
+    
+    dispatch_status_notification
+  end
+  
+  def mark_as_lost!
+    return false unless can_be_lost?
+    
+    transaction do
+      lost!
+      initiate_insurance_claim
+      notify_customer_of_loss
+    end
+  end
+  
+  private
+  
+  def can_be_lost?
+    shipped? || in_transit?
+  end
+end
+
+# Automatic scopes and predicates
+Shipment.delivered
+Shipment.in_transit
+shipment.pending?
+shipment.delivered!
+```
+
+## Query Objects As Scopes
+* Use scopes for reusable, chainable query logic
+* Compose scopes in controllers for specific needs
+* Keep scopes focused on single responsibilities
+
+```ruby
+# Good - composable scopes
+class Article < ApplicationRecord
+  scope :published, -> { where.not(published_at: nil) }
+  scope :featured, -> { where(featured: true) }
+  scope :recent, -> { where("created_at > ?", 2.weeks.ago) }
+  scope :by_author, ->(author) { where(author: author) }
+  scope :tagged_with, ->(tag) { joins(:tags).where(tags: { name: tag }) }
+  scope :popular, -> { where("views_count > ?", 1000) }
+  
+  scope :for_homepage, -> { published.featured.recent.limit(5) }
+end
+
+class ArticlesController < ApplicationController
+  def index
+    @articles = Article.published.recent
+    @articles = @articles.by_author(params[:author]) if params[:author]
+    @articles = @articles.tagged_with(params[:tag]) if params[:tag]
+    @articles = @articles.page(params[:page])
+  end
+end
+```
+
+## Models Enforce Invariants
+* Models are responsible for their own consistency
+* Use Active Record validations for data integrity
+* Custom validators for domain-specific rules
+
+```ruby
+# Good - comprehensive domain validations
+class Reservation < ApplicationRecord
+  validate :start_before_end
+  validate :no_double_booking
+  validate :within_business_hours
+  validate :minimum_duration
+  
+  before_validation :calculate_total_price
+  
+  private
+  
+  def start_before_end
+    return unless start_time && end_time
+    errors.add(:end_time, "must be after start time") if end_time <= start_time
+  end
+  
+  def no_double_booking
+    overlapping = Reservation
+      .where(resource: resource)
+      .where.not(id: id)
+      .where("start_time < ? AND end_time > ?", end_time, start_time)
+    
+    errors.add(:base, "Resource is already booked") if overlapping.exists?
+  end
+  
+  def within_business_hours
+    errors.add(:start_time, "must be during business hours") unless resource.available_at?(start_time)
+  end
+  
+  def minimum_duration
+    return unless start_time && end_time
+    
+    duration = (end_time - start_time) / 1.hour
+    errors.add(:base, "Minimum booking is 2 hours") if duration < 2
+  end
+  
+  def calculate_total_price
+    self.total_price = resource.hourly_rate * duration_in_hours
   end
 end
 ```
 
 ## Callbacks Within Boundaries
-* Use callbacks for object-internal transformations
+* Use callbacks for internal state management
 * Use explicit method calls for external side effects
-* Keep cascade depth visible and testable
+* Keep callback chains shallow and visible
 
 ```ruby
-# Good - callbacks for internal state, explicit for external
-class Comment < ApplicationRecord
-  belongs_to :article, counter_cache: true
-  belongs_to :user
-
-  before_save :extract_mentions
-  after_destroy :cleanup_associations
-
-  def publish!
+# Good - callbacks for internal, explicit for external
+class User < ApplicationRecord
+  before_save :normalize_email
+  before_create :generate_confirmation_token
+  after_update :track_email_change, if: :saved_change_to_email?
+  
+  def confirm!
     transaction do
+      self.confirmed_at = Time.current
+      self.confirmation_token = nil
       save!
-      notify_mentioned_users
-      update_user_stats
+      
+      # External effects - explicit
+      grant_initial_credits
+      subscribe_to_newsletter if opted_in?
+      WelcomeMailer.confirmed(self).deliver_later
     end
   end
-
+  
   private
-
-  def extract_mentions
-    # Internal data transformation - good for callback
-    self.mentioned_user_ids = body.scan(/@(\w+)/).map { |u| User.find_by(username: u) }
+  
+  # Internal state - callbacks
+  def normalize_email
+    self.email = email.downcase.strip
   end
-
-  def cleanup_associations
-    # Cleaning up owned data - stays within boundary
-    notifications.destroy_all
+  
+  def generate_confirmation_token
+    self.confirmation_token = SecureRandom.urlsafe_base64
   end
-
-  def notify_mentioned_users
-    # External effect - explicit call
-    mentioned_users.find_each do |user|
-      CommentMailer.mentioned(user, self).deliver_later
-    end
+  
+  def track_email_change
+    self.email_change_history ||= []
+    self.email_change_history << {
+      from: email_before_last_save,
+      to: email,
+      changed_at: Time.current
+    }
   end
-
-  def update_user_stats
-    # External effect - explicit call
-    user.increment!(:comments_count)
+  
+  # External effects - explicit calls
+  def grant_initial_credits
+    credits.create!(amount: 100, reason: "Welcome bonus")
   end
-end
-
-# Usage makes side effects visible
-@comment = Comment.new(comment_params)
-@comment.publish! # Clear that this does more than save
-```
-
-## Query Objects As Scopes
-* Use scopes for reusable query logic
-* Chain scopes for composable queries
-* Controllers compose scopes for their needs
-
-```ruby
-# Good - reusable scopes, controller composes
-class Post < ApplicationRecord
-  scope :published, -> { where(status: 'published') }
-  scope :featured, -> { where(featured: true) }
-  scope :recent, -> { order(created_at: :desc) }
-  scope :by_author, ->(author) { where(author: author) }
-end
-
-class HomepageController < ApplicationController
-  def index
-    @posts = Post.published.featured.recent.limit(5)
-    @events = Event.upcoming.featured.limit(3)
-  end
-end
-
-class PostsController < ApplicationController
-  def index
-    @posts = Post.published.recent
-    @posts = @posts.by_author(params[:author]) if params[:author]
-  end
-end
-
-# Bad - model knows about UI contexts
-class Post < ApplicationRecord
-  def self.for_homepage
-    published.featured.recent.limit(5)
-  end
-
-  def self.for_sidebar
-    published.popular.limit(10)
+  
+  def subscribe_to_newsletter
+    NewsletterSubscription.create!(email: email, user: self)
   end
 end
 ```
 
 ## Domain Objects Beyond ActiveRecord
-* Create Plain Old Ruby Objects for complex domain logic
-* Use POROs for calculations, workflows, and transient state
-* Give objects expressive interfaces that model the domain
+* Create POROs for complex calculations and workflows
+* Use value objects for domain concepts
+* Keep ActiveRecord for persistence, POROs for algorithms
 
 ```ruby
 # Good - PORO for complex domain logic
-class PricingCalculator
-  def initialize(order)
-    @order = order
-    @rules = load_pricing_rules
+class PriceQuote
+  attr_reader :items, :customer, :valid_until
+  
+  def initialize(items:, customer:)
+    @items = items
+    @customer = customer
+    @valid_until = 7.days.from_now
   end
-
-  def subtotal
-    @order.line_items.sum(&:total)
-  end
-
-  def discount
-    @rules.map { |rule| rule.apply(@order) }.sum
-  end
-
-  def tax
-    TaxCalculator.new(@order.shipping_address).calculate(taxable_amount)
-  end
-
+  
   def total
-    subtotal - discount + tax + shipping
+    subtotal - discount + tax
   end
-
-  private
-
-  def taxable_amount
-    subtotal - discount
-  end
-end
-
-# Usage - clean interface
-calculator = PricingCalculator.new(order)
-order.update!(
-  subtotal: calculator.subtotal,
-  discount: calculator.discount,
-  tax: calculator.tax,
-  total: calculator.total
-)
-
-# Bad - shoving everything into ActiveRecord
-class Order < ApplicationRecord
-  def calculate_total
-    # 200 lines of pricing logic mixed with persistence
-  end
-end
-
-# Also bad - procedural service class
-class PricingService
-  def self.calculate(order)
-    subtotal = 0
-    order.line_items.each do |item|
-      subtotal += item.quantity * item.price
-    end
-
-    discount = 0
-    if order.coupon_code
-      discount = CouponService.calculate_discount(order.coupon_code, subtotal)
-    end
-
-    tax = TaxService.calculate_tax(subtotal - discount, order.shipping_address)
-    shipping = ShippingService.calculate_shipping(order)
-
-    total = subtotal - discount + tax + shipping
-
-    order.update!(
-      subtotal: subtotal,
-      discount: discount,
-      tax: tax,
-      total: total
+  
+  def accept!
+    Order.create!(
+      customer: customer,
+      line_items: items.map { |i| LineItem.from_quote_item(i) },
+      total: total,
+      quoted_price: total,
+      accepted_at: Time.current
     )
   end
-end
-# Procedural, not object-oriented
-```
-
-## Concerns For Shared Behavior
-* Extract shared behavior into concerns
-* Use for cross-cutting functionality
-* Keep concerns focused on single responsibility
-
-```ruby
-# Good - focused concern
-module Publishable
-  extend ActiveSupport::Concern
-
-  included do
-    scope :published, -> { where.not(published_at: nil) }
-    scope :draft, -> { where(published_at: nil) }
+  
+  private
+  
+  def subtotal
+    @subtotal ||= items.sum { |item| item.quantity * item.unit_price }
   end
-
-  def published?
-    published_at.present?
+  
+  def discount
+    @discount ||= DiscountCalculator.new(customer, subtotal).calculate
   end
-
-  def publish!
-    update!(published_at: Time.current) unless published?
-  end
-
-  def unpublish!
-    update!(published_at: nil) if published?
+  
+  def tax
+    @tax ||= customer.tax_rate * (subtotal - discount)
   end
 end
 
-class Article < ApplicationRecord
-  include Publishable
-end
-
-class Page < ApplicationRecord
-  include Publishable
-end
-```
-
-## Database-Backed Enums
-* Use Rails enums for status fields
-* Get free scopes and predicates
-* Keep status logic in the model
-
-```ruby
-# Good - leveraging Rails enums
-class Order < ApplicationRecord
-  enum status: {
-    pending: 0,
-    processing: 1,
-    shipped: 2,
-    delivered: 3,
-    cancelled: 4
-  }
-
-  def cancel!
-    return if delivered? || cancelled?
-
-    cancelled!
-    refund_payment
-  end
-
-  def can_ship?
-    processing? && inventory_available?
-  end
-end
-
-# Automatic scopes and predicates
-Order.pending
-Order.shipped
-order.pending?
-order.shipped!
-
-# Bad - string statuses with manual checks
-class Order < ApplicationRecord
-  STATUSES = %w[pending processing shipped delivered cancelled]
-
-  def pending?
-    status == 'pending'
-  end
-
-  def self.pending
-    where(status: 'pending')
-  end
+# Usage
+quote = PriceQuote.new(items: cart_items, customer: current_user)
+if params[:accept]
+  order = quote.accept!
+  redirect_to order
+else
+  render :show, locals: { quote: quote }
 end
 ```
 
 ## Domain Cohesion Over Layer Separation
-* Group logic by domain concept, not technical role
-* Rich objects that understand their full context over many single-purpose classes
-* Let views make view decisions, models enforce business rules, controllers orchestrate
-* Extract only when complexity genuinely demands it, not for "purity"
+* Let each layer handle what it naturally owns
+* Views make presentation decisions
+* Controllers orchestrate requests
+* Models enforce business rules
 
 ```ruby
-# Good - each layer handles its own logic
-# View: Presentation decisions
-# <% if user_signed_in? && @article.editable_by?(current_user) %>
-#   <%= link_to "Edit", edit_article_path(@article),
-#               class: @article.published? ? "btn-warning" : "btn-primary" %>
-# <% end %>
-
-# Controller: Request orchestration
-def update
-  @article = Article.find(params[:id])
-  authorize @article  # authorization logic
-
-  if @article.update(article_params)
-    redirect_to @article
-  else
-    render :edit
-  end
-end
-
-# Model: Business rules
-class Article < ApplicationRecord
-  def editable_by?(user)
-    user == author || user.admin?
-  end
-
-  def publish!
-    return false unless valid? && draft?
-    update!(published_at: Time.current, status: :published)
-  end
-end
-
-# Bad - controller coupled to view needs
-class ArticlesController < ApplicationController
-  def show
-    @article = Article.find(params[:id])
-    @can_edit = user_signed_in? && (@article.author == current_user || current_user.admin?)
-    @edit_button_class = @article.published? ? "btn-warning" : "btn-primary"
-    @show_edit_button = @can_edit  # Controller shouldn't know about UI
-  end
-end
-
-# Bad - helper doing what view should do
-module ArticlesHelper
-  def edit_button_for(article)
-    return unless user_signed_in? && article.editable_by?(current_user)
-
-    link_to "Edit", edit_article_path(article),
-            class: article.published? ? "btn-warning" : "btn-primary"
-  end
-end
-# Now view can't see its own logic: <%= edit_button_for(@article) %>
-```
-
-## Models Enforce Their Own Consistency
-* Validations belong in models, not controllers
-* Use built-in Rails validations for common rules
-* Custom validators for domain-specific constraints
-
-```ruby
-# Good - Rails validations with custom validators
-class Account < ApplicationRecord
-  RESERVED_SUBDOMAINS = %w[www app api admin]
-
-  validates :email, presence: true, uniqueness: true
-  validates :subdomain, presence: true, format: /\A[a-z0-9-]+\z/
-  validate :subdomain_not_reserved
-
-  private
-
-  def subdomain_not_reserved
-    return unless RESERVED_SUBDOMAINS.include?(subdomain)
-
-    errors.add(:subdomain, 'is reserved')
-  end
-end
-
-# Bad - validation in controller
-class AccountsController < ApplicationController
+# Good - each layer handles its concerns
+class InvoicesController < ApplicationController
   def create
-    if params[:subdomain].match?(/[^a-z0-9-]/)
-      flash[:error] = 'Invalid subdomain'
+    @invoice = current_account.invoices.build(invoice_params)
+    
+    if @invoice.save
+      @invoice.dispatch! if params[:send_now]
+      redirect_to @invoice
+    else
       render :new
-      return
     end
-
-    @account = Account.new(account_params)
-    # Validation should be in model
   end
 end
+
+class Invoice < ApplicationRecord
+  def dispatch!
+    return false if dispatched?
+    
+    transaction do
+      generate_pdf
+      self.dispatched_at = Time.current
+      save!
+      InvoiceMailer.dispatch(self).deliver_later
+    end
+  end
+  
+  def overdue?
+    !paid? && due_date < Date.current
+  end
+  
+  def payable?
+    !paid? && !cancelled?
+  end
+end
+
+# View handles presentation
+# app/views/invoices/_invoice.html.erb
+<div class="invoice <%= 'overdue' if invoice.overdue? %>">
+  <% if invoice.payable? %>
+    <%= button_to "Pay Now", pay_invoice_path(invoice), 
+                  class: invoice.overdue? ? "btn-urgent" : "btn-primary" %>
+  <% end %>
+</div>
 ```
