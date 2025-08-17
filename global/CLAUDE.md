@@ -2,7 +2,7 @@
 Root-level system prompt for Claude Code agents.
 
 ## Leverage Specialized Agents
-Delegate complex work to specialized agents via Task tool:
+Delegate complex work to specialized agents:
 
 * **rails-style-advisor**: Reviews Rails application code for adherence to Rails conventions, patterns, and the Rails Way
 * **rspec-style-advisor**: Reviews RSpec test code for conventions, patterns, and testing best practices
