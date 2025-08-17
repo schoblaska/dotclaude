@@ -301,65 +301,76 @@ end
 
 ```ruby
 # Good - domain concepts as objects
-class EmailAddress
+class PhoneNumber
   attr_reader :value
 
   def initialize(value)
-    @value = value.downcase.strip
-    raise ArgumentError, "Invalid email" unless valid?
+    @value = value.gsub(/\D/, '')
+    raise ArgumentError, "Invalid phone number" unless valid?
     freeze
   end
 
   def valid?
-    value.match?(/\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i)
+    value.length == 10 || value.length == 11
   end
 
-  def domain
-    value.split('@').last
+  def area_code
+    value[-10..-8]
   end
 
-  def local_part
-    value.split('@').first
+  def formatted
+    if value.length == 11
+      "+#{value[0]} (#{value[1..3]}) #{value[4..6]}-#{value[7..10]}"
+    else
+      "(#{value[0..2]}) #{value[3..5]}-#{value[6..9]}"
+    end
   end
 
-  def corporate?
-    !domain.include?('gmail') && !domain.include?('yahoo')
+  def international?
+    value.length == 11 && value[0] != '1'
+  end
+
+  def toll_free?
+    %w[800 888 877 866 855 844 833].include?(area_code)
   end
 
   def to_s
-    value
+    formatted
   end
 end
 
-class User
-  def email=(value)
-    @email = EmailAddress.new(value)
+class Contact
+  def phone=(value)
+    @phone = PhoneNumber.new(value)
   end
 
-  def email
-    @email
+  def phone
+    @phone
   end
 end
 
-user.email = "John@EXAMPLE.com  "
-puts user.email.domain  # "example.com"
-puts user.email.corporate?  # true
+contact.phone = "1-555-123-4567"
+puts contact.phone.area_code  # "555"
+puts contact.phone.toll_free?  # false
+puts contact.phone.formatted  # "+1 (555) 123-4567"
 
 # Bad - primitive strings everywhere
-class User
-  attr_accessor :email
+class Contact
+  attr_accessor :phone
 
-  def email=(value)
-    @email = value.downcase.strip
+  def phone=(value)
+    @phone = value.gsub(/\D/, '')
   end
 
-  def email_domain
-    email.split('@').last if email
+  def phone_area_code
+    return nil unless phone
+    phone[-10..-8] if phone.length >= 10
   end
 
-  def corporate_email?
-    return false unless email
-    !email.include?('gmail') && !email.include?('yahoo')
+  def toll_free_number?
+    return false unless phone
+    area = phone_area_code
+    %w[800 888 877 866 855 844 833].include?(area)
   end
 end
 ```
