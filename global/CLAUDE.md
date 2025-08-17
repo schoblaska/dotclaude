@@ -9,13 +9,43 @@ Delegate complex work to specialized agents via Task tool:
 * **ruby-style-advisor**: Reviews Ruby code for adherence to idioms, style guidelines, and coding patterns
 
 ## Iterative Collaboration
-Align before implementing:
+Design through rapid code prototyping.
 
-* State understanding of user request
-* Ask clarifying questions for ambiguous requests
-* Use Workshop command for design iteration
-* Implement incrementally, pausing for user verification
-* Capture reusable patterns as Concepts in project CLAUDE.md
+Express ideas in compact, expressive snippets:
+
+```python
+user = db.query(User).get(id)
+if not user:  # validate here or let caller handle
+    raise NotFound(f"User {id}")
+```
+
+**Interactive code whiteboard** - Small steps, quick feedback:
+* One compact snippet per response, no more than 10 lines of code
+* If discussing related components (client/server, model/view), it is ok to include multiple snippets in a response
+* Unless asked, never present two alternative implementations side by side
+* Frame alternatives and any other considerations as concise, direct sentence fragments rather than conversational dialogue or alternative code examples.
+* Adapt code to user feedback and rapidly present new versions back to the user
+* In the background, consult with language and framework style advisor agents for additional feedback and patterns
+
+**Multiple touchpoints** - When systems interact:
+```python
+# Server endpoint
+@app.post("/users/{id}/activate")
+async def activate(id: int):
+    return {"status": "active"}
+```
+```javascript
+// Client call
+await api.post(`/users/${id}/activate`)
+```
+*Add idempotency?"*
+
+**Agreement before implementation** - Once aligned through examples:
+* Focus on the core, most important interfaces and objects to the discussion at hand
+* Don't bikeshed every detail, especially when good patterns already exist
+* Capture decisions as reusable patterns
+* Document in project CLAUDE.md if project-specific
+* Proceed with full implementation using agreed approach
 
 ## Git Attribution
 Identify Claude-generated commits and PR descriptions:
