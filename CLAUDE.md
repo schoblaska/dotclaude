@@ -6,7 +6,6 @@ This repository contains my personal dotclaude configuration files that get syml
 * `global/` - Contains system-level CLAUDE.md and settings.json files
 * `agents/` - Custom agent prompts for specialized tasks
 * `hooks/` - Shell commands that execute in response to Claude Code events
-* `patterns/` - Language and framework-specific patterns and best practices
 * `prompts/` - Additional prompt templates
 * `templates/` - Document templates for various purposes
 

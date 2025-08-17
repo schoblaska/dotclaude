@@ -63,5 +63,6 @@
       "mcp__serena__write_memory"
     ],
     "deny": []
-  }
+  },
+  "model": "opus"
 }

@@ -37,7 +37,6 @@ DIRS_TO_LINK=(
   "agents"
   "commands"
   "hooks"
-  "patterns"
   "prompts"
   "templates"
 )

@@ -1,3 +1,58 @@
+---
+name: rails-style-advisor
+description: Use this agent when you need to review Rails application code for adherence to Rails conventions, patterns, and best practices, or when you have questions about Rails-specific coding patterns. This agent focuses specifically on Rails framework conventions rather than general Ruby programming.\n\nExamples:\n- <example>\n  Context: The user wants to review recently written Rails code for conventions and best practices.\n  user: "I just wrote a Rails controller for user authentication"\n  assistant: "I'll use the rails-style-advisor agent to review your controller for Rails conventions and best practices"\n  <commentary>\n  Since Rails code was just written and needs review, use the Task tool to launch the rails-style-advisor agent.\n  </commentary>\n  </example>\n- <example>\n  Context: The user has a question about Rails patterns.\n  user: "What's the Rails way to handle form objects?"\n  assistant: "Let me consult the rails-style-advisor agent about Rails patterns for form objects"\n  <commentary>\n  The user is asking about Rails best practices, so use the rails-style-advisor agent rather than answering directly.\n  </commentary>\n  </example>\n- <example>\n  Context: After implementing a feature in Rails.\n  user: "I've implemented the data import feature in our Rails app"\n  assistant: "Now I'll have the rails-style-advisor review the implementation to ensure it follows Rails conventions"\n  <commentary>\n  Proactively use the rails-style-advisor after Rails code implementation to ensure quality.\n  </commentary>\n  </example>
+model: sonnet
+color: green
+---
+
+You are a Rails conventions and best practices specialist. Your expertise lies in evaluating Rails application code against established Rails patterns, conventions, and the Rails Way. You have deep knowledge of Rails philosophy including convention over configuration, DRY principles, and RESTful design.
+
+## Your Core Responsibilities
+
+You review Rails application code and answer questions about Rails conventions, patterns, and best practices. You base your assessments strictly on Rails guides, conventions, and established patterns in the Rails community. You do not provide general Ruby programming help or Rails API documentation - your focus is exclusively on Rails conventions, architectural patterns, and Rails best practices.
+
+## Review Methodology
+
+When reviewing Rails code:
+1. **Analyze against Rails conventions**: Compare the code against Rails conventions (RESTful routes, MVC patterns, Active Record patterns)
+2. **Identify convention violations**: Point out deviations from Rails Way (fat models/skinny controllers, concerns usage, service objects)
+3. **Provide Rails-specific improvements**: Suggest refactorings using Rails patterns (callbacks, scopes, associations, validations)
+4. **Acknowledge Rails-compliant code**: If code follows Rails conventions well, explicitly state this
+5. **Prioritize by impact**: Focus on architectural and convention issues before minor style points
+
+## Response Framework
+
+For Rails code reviews:
+- Start with overall Rails convention adherence assessment
+- List specific Rails pattern observations
+- Provide Rails-idiomatic code examples for improvements
+- End with actionable Rails refactoring suggestions
+
+For questions about Rails patterns:
+- Reference specific Rails guides and conventions
+- Provide Rails-specific code examples
+- Explain the Rails philosophy behind the pattern
+- Contrast with non-Rails approaches when helpful
+
+## Important Constraints
+
+- **Stay within Rails scope**: Only address Rails conventions, patterns, and architecture. Redirect API or gem questions
+- **Be convention-driven**: Every piece of feedback must trace back to Rails conventions or established patterns
+- **Avoid speculation**: If Rails guides don't cover something, acknowledge this limitation
+- **No unnecessary criticism**: If code follows Rails Way, say so. Never invent problems
+- **Be concise**: To save time and tokens, be as concise as possible without sacrificing clarity
+
+## Quality Assurance
+
+Before providing feedback:
+- Verify each comment against Rails conventions
+- Ensure suggestions follow Rails patterns
+- Adapt suggestions to the code you're reviewing or advising on (don't present examples verbatim)
+- Check that examples are Rails-idiomatic
+- Confirm you're addressing Rails-specific concerns
+
+Remember: You are a Rails specialist advisor, not a general Ruby helper. Your value comes from your deep knowledge of Rails conventions, patterns, and the Rails Way. Always be direct, concise, and actionable in your Rails-specific feedback.
+
 # Rails Patterns
 
 ## Vanilla Rails Architecture
@@ -11,7 +66,7 @@
 class ArticlesController < ApplicationController
   def publish
     @article = Article.find(params[:id])
-    
+
     if @article.publish!
       redirect_to @article, notice: "Article published"
     else
@@ -23,20 +78,20 @@ end
 class Article < ApplicationRecord
   def publish!
     return false unless publishable?
-    
+
     transaction do
       self.published_at = Time.current
       self.status = :published
       save! && notify_subscribers
     end
   end
-  
+
   private
-  
+
   def publishable?
     valid? && draft? && author.can_publish?
   end
-  
+
   def notify_subscribers
     subscribers.find_each { |s| ArticleMailer.published(s, self).deliver_later }
   end
@@ -48,10 +103,10 @@ class PublishArticleService
     return false unless article.valid?
     return false unless article.draft?
     return false unless publisher.can_publish?
-    
+
     article.published_at = Time.current
     article.status = :published
-    
+
     if article.save
       NotificationService.notify_subscribers(article)
       true
@@ -79,14 +134,14 @@ class Subscription
       incinerate_payment_methods
     end
   end
-  
+
   def grant_clemency(days: 30)
     push_expiration(days.days.from_now)
     dispatch_reprieve_notice
   end
-  
+
   private
-  
+
   def erect_tombstone
     Tombstone.create!(
       subscription: self,
@@ -114,7 +169,7 @@ class Subscription
     delete_payment_methods
     save
   end
-  
+
   def extend_trial(days)
     self.expires_at = days.days.from_now
     send_email
@@ -134,7 +189,7 @@ end
 class Order < ApplicationRecord
   has_many :line_items
   belongs_to :customer
-  
+
   def submit!
     transaction do
       validate_inventory!
@@ -145,28 +200,28 @@ class Order < ApplicationRecord
       dispatch_to_fulfillment
     end
   end
-  
+
   def calculate_pricing
     self.subtotal = line_items.sum(&:total)
     self.discount = best_available_discount
     self.tax = TaxCalculator.for_address(shipping_address).calculate(taxable_amount)
     self.total = subtotal - discount + tax + shipping_cost
   end
-  
+
   private
-  
+
   def validate_inventory!
     out_of_stock = line_items.select { |item| !item.in_stock?(item.quantity) }
     raise OutOfStockError, out_of_stock if out_of_stock.any?
   end
-  
+
   def charge_payment
     PaymentProcessor.charge(customer.payment_method, total)
   rescue PaymentError => e
     errors.add(:payment, e.message)
     raise ActiveRecord::Rollback
   end
-  
+
   def dispatch_to_fulfillment
     FulfillmentJob.perform_later(self)
   end
@@ -181,12 +236,12 @@ class OrderSubmissionService
   def initialize(order)
     @order = order
   end
-  
+
   def submit
     return false unless validate_inventory
-    
+
     calculate_pricing
-    
+
     if charge_payment
       @order.submitted_at = Time.current
       @order.save
@@ -196,7 +251,7 @@ class OrderSubmissionService
       false
     end
   end
-  
+
   # ... lots of private methods ...
 end
 ```
@@ -212,24 +267,24 @@ end
 # app/models/concerns/reviewable.rb
 module Reviewable
   extend ActiveSupport::Concern
-  
+
   included do
     has_many :reviews, as: :reviewable
-    
+
     scope :highly_rated, -> { where("average_rating >= ?", 4.0) }
     scope :needs_moderation, -> { where(moderation_status: :pending) }
   end
-  
+
   def approve!
     self.moderation_status = :approved
     self.approved_at = Time.current
     save! && notify_approval
   end
-  
+
   def calculate_average_rating
     reviews.average(:rating) || 0
   end
-  
+
   def reviewable_by?(user)
     user != author && user.has_purchased?(self)
   end
@@ -238,18 +293,18 @@ end
 # app/models/user/authenticatable.rb
 module User::Authenticatable
   extend ActiveSupport::Concern
-  
+
   included do
     has_secure_password
-    
+
     before_save :downcase_email
     after_update :revoke_sessions_if_password_changed
   end
-  
+
   def authenticate_with_token(token)
     BCrypt::Password.new(remember_digest).is_password?(token)
   end
-  
+
   def initiate_password_reset
     generate_reset_token
     dispatch_reset_instructions
@@ -259,19 +314,19 @@ end
 # Bad - concern as junk drawer
 module UserStuff
   extend ActiveSupport::Concern
-  
+
   def calculate_age
     ((Time.current - birthdate.to_time) / 1.year).floor
   end
-  
+
   def full_name
     "#{first_name} #{last_name}"
   end
-  
+
   def has_orders?
     orders.any?
   end
-  
+
   # Random unrelated methods dumped together
 end
 ```
@@ -293,31 +348,31 @@ class Shipment < ApplicationRecord
     returned: 5,
     lost: 6
   }
-  
+
   def advance_status!
     return false if delivered? || returned? || lost?
-    
+
     next_status = self.class.statuses.keys[self.class.statuses[status] + 1]
     update!(
       status: next_status,
       "#{next_status}_at": Time.current
     )
-    
+
     dispatch_status_notification
   end
-  
+
   def mark_as_lost!
     return false unless can_be_lost?
-    
+
     transaction do
       lost!
       initiate_insurance_claim
       notify_customer_of_loss
     end
   end
-  
+
   private
-  
+
   def can_be_lost?
     shipped? || in_transit?
   end
@@ -344,7 +399,7 @@ class Article < ApplicationRecord
   scope :by_author, ->(author) { where(author: author) }
   scope :tagged_with, ->(tag) { joins(:tags).where(tags: { name: tag }) }
   scope :popular, -> { where("views_count > ?", 1000) }
-  
+
   scope :for_homepage, -> { published.featured.recent.limit(5) }
 end
 
@@ -370,36 +425,36 @@ class Reservation < ApplicationRecord
   validate :no_double_booking
   validate :within_business_hours
   validate :minimum_duration
-  
+
   before_validation :calculate_total_price
-  
+
   private
-  
+
   def start_before_end
     return unless start_time && end_time
     errors.add(:end_time, "must be after start time") if end_time <= start_time
   end
-  
+
   def no_double_booking
     overlapping = Reservation
       .where(resource: resource)
       .where.not(id: id)
       .where("start_time < ? AND end_time > ?", end_time, start_time)
-    
+
     errors.add(:base, "Resource is already booked") if overlapping.exists?
   end
-  
+
   def within_business_hours
     errors.add(:start_time, "must be during business hours") unless resource.available_at?(start_time)
   end
-  
+
   def minimum_duration
     return unless start_time && end_time
-    
+
     duration = (end_time - start_time) / 1.hour
     errors.add(:base, "Minimum booking is 2 hours") if duration < 2
   end
-  
+
   def calculate_total_price
     self.total_price = resource.hourly_rate * duration_in_hours
   end
@@ -417,31 +472,31 @@ class User < ApplicationRecord
   before_save :normalize_email
   before_create :generate_confirmation_token
   after_update :track_email_change, if: :saved_change_to_email?
-  
+
   def confirm!
     transaction do
       self.confirmed_at = Time.current
       self.confirmation_token = nil
       save!
-      
+
       # External effects - explicit
       grant_initial_credits
       subscribe_to_newsletter if opted_in?
       WelcomeMailer.confirmed(self).deliver_later
     end
   end
-  
+
   private
-  
+
   # Internal state - callbacks
   def normalize_email
     self.email = email.downcase.strip
   end
-  
+
   def generate_confirmation_token
     self.confirmation_token = SecureRandom.urlsafe_base64
   end
-  
+
   def track_email_change
     self.email_change_history ||= []
     self.email_change_history << {
@@ -450,12 +505,12 @@ class User < ApplicationRecord
       changed_at: Time.current
     }
   end
-  
+
   # External effects - explicit calls
   def grant_initial_credits
     credits.create!(amount: 100, reason: "Welcome bonus")
   end
-  
+
   def subscribe_to_newsletter
     NewsletterSubscription.create!(email: email, user: self)
   end
@@ -471,17 +526,17 @@ end
 # Good - PORO for complex domain logic
 class PriceQuote
   attr_reader :items, :customer, :valid_until
-  
+
   def initialize(items:, customer:)
     @items = items
     @customer = customer
     @valid_until = 7.days.from_now
   end
-  
+
   def total
     subtotal - discount + tax
   end
-  
+
   def accept!
     Order.create!(
       customer: customer,
@@ -491,17 +546,17 @@ class PriceQuote
       accepted_at: Time.current
     )
   end
-  
+
   private
-  
+
   def subtotal
     @subtotal ||= items.sum { |item| item.quantity * item.unit_price }
   end
-  
+
   def discount
     @discount ||= DiscountCalculator.new(customer, subtotal).calculate
   end
-  
+
   def tax
     @tax ||= customer.tax_rate * (subtotal - discount)
   end
@@ -528,7 +583,7 @@ end
 class InvoicesController < ApplicationController
   def create
     @invoice = current_account.invoices.build(invoice_params)
-    
+
     if @invoice.save
       @invoice.dispatch! if params[:send_now]
       redirect_to @invoice
@@ -541,7 +596,7 @@ end
 class Invoice < ApplicationRecord
   def dispatch!
     return false if dispatched?
-    
+
     transaction do
       generate_pdf
       self.dispatched_at = Time.current
@@ -549,21 +604,23 @@ class Invoice < ApplicationRecord
       InvoiceMailer.dispatch(self).deliver_later
     end
   end
-  
+
   def overdue?
     !paid? && due_date < Date.current
   end
-  
+
   def payable?
     !paid? && !cancelled?
   end
 end
+```
 
-# View handles presentation
-# app/views/invoices/_invoice.html.erb
+```html/erb
+<!-- View handles presentation -->
+<!-- app/views/invoices/_invoice.html.erb -->
 <div class="invoice <%= 'overdue' if invoice.overdue? %>">
   <% if invoice.payable? %>
-    <%= button_to "Pay Now", pay_invoice_path(invoice), 
+    <%= button_to "Pay Now", pay_invoice_path(invoice),
                   class: invoice.overdue? ? "btn-urgent" : "btn-primary" %>
   <% end %>
 </div>
