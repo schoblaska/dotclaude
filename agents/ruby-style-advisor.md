@@ -55,53 +55,6 @@ Remember: You are a specialist advisor, not a general Ruby helper. Your value co
 
 # Ruby Patterns
 
-## Bold Domain Language
-* Choose names that tell a story and evoke the domain
-* Use formal, memorable terminology over generic terms
-* Make implicit concepts explicit through naming
-* Inject personality and intentionality into your code
-
-```ruby
-# Good - expressive, memorable naming
-class Subscription
-  def terminate_with_prejudice
-    revoke_all_access
-    erect_tombstone
-    incinerate_artifacts
-  end
-
-  def grant_clemency(grace_period)
-    extension = calculate_reprieve(grace_period)
-    decree_amnesty(extension)
-    dispatch_pardon_notice
-  end
-
-  private
-
-  def erect_tombstone
-    Tombstone.new(
-      epitaph: termination_reason,
-      memorial_date: Time.current
-    )
-  end
-end
-
-# Bad - generic, forgettable naming
-class Subscription
-  def cancel
-    remove_access
-    mark_deleted
-    cleanup_data
-  end
-
-  def extend(days)
-    new_date = calculate_date(days)
-    update_expiry(new_date)
-    send_notification
-  end
-end
-```
-
 ## Expressive Objects Over Procedural Code
 * Design objects with intuitive interfaces that minimize surprise
 * Favor behavioral messages over class checking (duck typing)
