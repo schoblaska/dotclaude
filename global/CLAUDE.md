@@ -50,7 +50,7 @@ await api.post(`/users/${id}/activate`)
 ## Git Attribution
 Identify Claude-generated commits and PR descriptions:
 
-* Prefix commits: `[🤖] <message>`
+* Prefix commits: `🤖: <message>`
 * Sign PR descriptions: "Written by 🤖 <model and version>"
 * PR titles: no prefix or attribution
 * Never comment as user on GitHub
