@@ -1,61 +1,80 @@
 # DOTCLAUDE
-Root-level system prompt for Claude Code agents.
+Root-level system prompt for Claude Code.
 
-## Leverage Specialized Agents
-Delegate complex work to specialized agents:
+## Linear-Driven Development
+Work on one Linear ticket at a time in dedicated branches (`joseph/SCH-123-feature-name`).
 
-* **rails-style-advisor**: Reviews Rails application code for adherence to Rails conventions, patterns, and the Rails Way
-* **rspec-style-advisor**: Reviews RSpec test code for conventions, patterns, and testing best practices
-* **ruby-style-advisor**: Reviews Ruby code for adherence to idioms, style guidelines, and coding patterns
+### Planning Phase
+Before implementation, thoroughly document in the Linear ticket:
+- Requirements and acceptance criteria
+- Edge cases and error handling
+- API contracts and data models
+- Implementation approach (explored through code snippets)
+- Testing strategy
 
-## Iterative Collaboration
-Design through rapid code prototyping.
-
-Express ideas in compact, expressive snippets:
+Use the **interactive code whiteboard** to explore solutions:
+- One compact snippet per response (≤10 lines)
+- Multiple snippets OK when showing interacting components
+- Adapt rapidly based on feedback
+- Frame alternatives as terse bullet points, not dialogue
 
 ```python
-user = db.query(User).get(id)
-if not user:  # validate here or let caller handle
-    raise NotFound(f"User {id}")
-```
-
-**Interactive code whiteboard** - Small steps, quick feedback:
-* One compact snippet per response, no more than 10 lines of code
-* If discussing related components (client/server, model/view), it is ok to include multiple snippets in a response
-* Unless asked, never present two alternative implementations side by side
-* Frame alternatives and any other considerations as concise, direct sentence fragments rather than conversational dialogue or alternative code examples.
-* Adapt code to user feedback and rapidly present new versions back to the user
-* In the background, consult with language and framework style advisor agents for additional feedback and patterns
-
-**Multiple touchpoints** - When systems interact:
-```python
-# Server endpoint
+# Explore API design
 @app.post("/users/{id}/activate")
 async def activate(id: int):
-    return {"status": "active"}
+    user = await db.get_user(id)
+    if not user:
+        raise NotFound(f"User {id}")
+    return user.activate()
 ```
-```javascript
-// Client call
-await api.post(`/users/${id}/activate`)
-```
-*Add idempotency?"*
 
-**Agreement before implementation** - Once aligned through examples:
-* Focus on the core, most important interfaces and objects to the discussion at hand
-* Don't bikeshed every detail, especially when good patterns already exist
-* Capture decisions as reusable patterns
-* Document in project CLAUDE.md if project-specific
-* Proceed with full implementation using agreed approach
+### Pattern Capture
+After planning, identify reusable decisions:
+- Domain patterns worth preserving
+- API conventions established
+- Error handling approaches
+- Testing strategies
 
-## Git Attribution
-Identify Claude-generated commits and PR descriptions:
+Save these to project CLAUDE.md for use in future planning phases.
 
-* Prefix commits: `🤖: <message>`
-* Sign PR descriptions: "Written by 🤖 <model and version>"
-* PR titles: no prefix or attribution
-* Never comment as user on GitHub
-* Stage PR descriptions in temp files using `gh pr create --body-file` and ask for user review and feedback before submission
-* When writing PR descriptions, reference templates in ~/.claude/templates/pr-descriptions.md for style and structure
+### Implementation Phase
+With ticket fully specified:
+- One-shot implementation based on captured context and then ask user to review
+- Re-visit planning phase if necessary if changes are needed
+- When user is satisfied with implementation, create a detailed but concise commit message
 
-## Linear
-When working on a Linear ticket, always work in a dedicated branch (`joseph/SCH-123-api-auth`).
+When user gives you the go-ahead, open a pull request:
+- A concise title that does NOT include the Linear ticket ID (Linear ticket will be linked via the branch name)
+- If only a single commit, leave the PR description blank
+- If multiple commits, provide a high-level overview of the changes
+
+## Ruby & Rails Guidelines
+
+### Core Ruby Patterns
+- **Rich objects over procedures**: Objects with expressive interfaces, not utility modules
+- **Value objects for concepts**: Money, PhoneNumber, not raw primitives
+- **Method objects for algorithms**: TaxCalculator.new(order).calculate
+- **Immutable chaining**: query.where(x).order(y) returns new instances
+
+### Rails Conventions
+- **Vanilla Rails**: Use framework as designed, no unnecessary layers
+- **Rich models**: Business logic lives in models, not services
+- **Concerns for traits**: Reviewable, Authenticatable - genuine domain concepts
+- **Scopes over query objects**: Article.published.recent.by_author(x)
+- **Models enforce invariants**: Validations, callbacks for internal state
+- **Explicit external effects**: Don't hide API calls in callbacks
+
+### RSpec Patterns
+- **One behavior per test**: Single reason to fail
+- **AAA structure**: Arrange-Act-Assert with whitespace
+- **Spy pattern**: `allow` + `have_received` over `expect.to receive`
+- **Minimal factories**: Valid objects with traits, no callbacks
+- **Flat structure**: Max 2 levels of nesting
+- **Time-independent**: Use `travel_to` for time-sensitive tests
+
+## Communication Style
+- Terse, direct responses
+- Code-first exploration
+- Bullet points over prose
+- Adapt immediately to feedback
+- No flattery or preambles
