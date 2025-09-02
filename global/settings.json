@@ -29,6 +29,7 @@
       "WebFetch(domain:news.ycombinator.com)",
       "WebFetch(domain:stackoverflow.com)",
       "WebFetch(domain:dev.37signals.com)",
+      "WebSearch",
       "~/.claude/*",
       "~/.claude/CLAUDE.md",
       "~/.claude/prompts/**",
